@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft" };
@@ -238,27 +238,30 @@ function nativeLN() {
   if (!NATIVE) return null;
   try { return (window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) || window.Capacitor.registerPlugin("LocalNotifications"); } catch (e) { return null; }
 }
-const NAT = { ready: false, exact: null };
+const NAT = { ready: false, exact: null, perm: "?", pending: null, error: "" };
 async function nativeSetup() {
   const ln = nativeLN(); if (!ln || NAT.ready) return;
   try {
     await ln.createChannel({ id: "repos", name: "Fin du repos", description: "Sonne et vibre à la fin du temps de repos", importance: 5, visibility: 1, vibration: true });
     let p = await ln.checkPermissions(); if (p.display !== "granted") p = await ln.requestPermissions();
+    NAT.perm = p.display;
     if (ln.checkExactNotificationSetting) { const ex = await ln.checkExactNotificationSetting(); NAT.exact = ex.exact_alarm === "granted"; }
-    NAT.ready = true;
-  } catch (e) {}
+    NAT.ready = true; NAT.error = "";
+  } catch (e) { NAT.error = (e && e.message) || String(e); }
 }
 async function nativeSchedule(sec) {
   const ln = nativeLN(); if (!ln) return;
   try {
     await ln.cancel({ notifications: [{ id: 1 }] });
     if (sec <= 0) return;
-    await ln.schedule({ notifications: [{ id: 1, title: "Repos terminé", body: T.label.replace(/<[^>]+>/g, ""), channelId: "repos", schedule: { at: new Date(Date.now() + sec * 1000), allowWhileIdle: true } }] });
-  } catch (e) {}
+    await ln.schedule({ notifications: [{ id: 1, title: "Repos terminé", body: T.label.replace(/<[^>]+>/g, "") || "C'est reparti", channelId: "repos", schedule: { at: new Date(Date.now() + sec * 1000), allowWhileIdle: true } }] });
+    const pend = await ln.getPending(); NAT.pending = pend && pend.notifications ? pend.notifications.length : null; NAT.error = "";
+  } catch (e) { NAT.error = (e && e.message) || String(e); }
 }
 async function nativeCancel() { const ln = nativeLN(); if (!ln) return; try { await ln.cancel({ notifications: [{ id: 1 }] }); if (ln.removeAllDeliveredNotifications) await ln.removeAllDeliveredNotifications(); } catch (e) {} }
-function scheduleAlert(sec) { if (NATIVE) nativeSchedule(sec); else { scheduleBeeps(sec); scheduleNotif(sec); } }
-function cancelAlert() { if (NATIVE) nativeCancel(); else { cancelBeeps(); clearTimeout(T.notifTimer); } }
+// Dans l'appli Android, le bip de la page sert aussi de secours tant que l'appli est à l'écran.
+function scheduleAlert(sec) { scheduleBeeps(sec); if (NATIVE) nativeSchedule(sec); else scheduleNotif(sec); }
+function cancelAlert() { cancelBeeps(); if (NATIVE) nativeCancel(); else clearTimeout(T.notifTimer); }
 
 function startTimer(sec, label) {
   T.total = sec; T.end = Date.now() + sec * 1000; T.running = true; T.buzzed = false; T.label = label;
@@ -280,7 +283,7 @@ function tickTimer() {
   const left = Math.round((T.end - Date.now()) / 1000), a = Math.abs(left);
   $("#t-time").textContent = (left < 0 ? "+" : "") + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0");
   $("#t-bar").style.width = Math.max(0, Math.min(100, (left / T.total) * 100)) + "%";
-  if (left <= 0 && !T.buzzed) { T.buzzed = true; $("#timer").classList.add("over"); if (!NATIVE) { try { navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 500]); } catch (e) {} } }
+  if (left <= 0 && !T.buzzed) { T.buzzed = true; $("#timer").classList.add("over"); try { navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 500]); } catch (e) {} }
 }
 setInterval(() => { tickTimer(); tickChrono(); }, 250);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && DRAFT) wakeLock(true); });
@@ -585,8 +588,15 @@ function viewReglages() {
     <label class="field wide" for="c-barres"><span>Barres (nom = poids, une par ligne)</span><textarea id="c-barres" rows="3" data-cfg="barres">${esc(CFG.barres.map((b) => `${b.nom} = ${fmt(b.poids)}`).join("\n"))}</textarea></label>
     <label class="field" for="c-son"><span>Bip de fin de repos</span><select id="c-son" data-cfg="son"><option value="1"${CFG.son ? " selected" : ""}>Activé</option><option value="0"${CFG.son ? "" : " selected"}>Désactivé</option></select></label>
     </div></div>
+    ${!NATIVE && /; wv\)/.test(navigator.userAgent) ? `<div class="banner warn">L'appli Android n'arrive pas à joindre ses fonctions natives : le minuteur fonctionne comme sur le web.</div>` : ""}
     ${NATIVE ? `<div class="card"><h3>Minuteur de l'appli Android</h3>
-    <p class="muted small">La fin du repos est une notification Android : elle sonne et vibre même écran verrouillé. ${NAT.exact === false ? "Les alarmes exactes ne sont pas autorisées : le bip peut arriver avec quelques secondes de retard." : ""}</p>
+    <p class="muted small">La fin du repos est une notification Android : elle sonne et vibre même écran verrouillé.</p>
+    <table class="data"><tbody>
+      <tr><td>Notifications</td><td class="n">${NAT.perm === "granted" ? "autorisées" : NAT.perm === "?" ? "non vérifié" : "<b>refusées</b>"}</td></tr>
+      <tr><td>Alarmes exactes</td><td class="n">${NAT.exact === true ? "autorisées" : NAT.exact === false ? "<b>refusées : notification retardée</b>" : "non vérifié"}</td></tr>
+      <tr><td>Notification programmée</td><td class="n">${NAT.pending === null ? "—" : NAT.pending ? "oui" : "non"}</td></tr>
+      ${NAT.error ? `<tr><td>Erreur</td><td class="n">${esc(NAT.error)}</td></tr>` : ""}
+    </tbody></table>
     <div class="row wrap"><button type="button" class="btn secondary" data-act="nat-perm">Autoriser les notifications</button><button type="button" class="btn secondary" data-act="nat-exact">Autoriser les alarmes exactes</button><button type="button" class="btn secondary" data-act="nat-test">Tester (5 s)</button></div></div>` : ""}
     <div class="card"><h3>Données</h3>
     <div class="row wrap"><button type="button" class="btn secondary" data-act="export">Exporter (JSON)</button><button type="button" class="btn secondary" data-act="export-csv">Exporter (CSV)</button><label class="btn secondary" for="imp">Importer un JSON</label><input id="imp" type="file" accept="application/json,.json" hidden></div>
@@ -692,7 +702,7 @@ document.addEventListener("click", async (ev) => {
     }
     case "nat-perm": NAT.ready = false; await nativeSetup(); toast("Notifications : vérifié."); return render();
     case "nat-exact": { const ln = nativeLN(); try { if (ln && ln.changeExactNotificationSetting) await ln.changeExactNotificationSetting(); } catch (e) {} NAT.ready = false; await nativeSetup(); return render(); }
-    case "nat-test": { await nativeSetup(); T.label = "Test du minuteur"; await nativeSchedule(5); toast("Notification dans 5 secondes : tu peux verrouiller l'écran."); return; }
+    case "nat-test": { NAT.ready = false; await nativeSetup(); T.label = "Test du minuteur"; await nativeSchedule(5); render(); toast(NAT.error ? "Échec : " + NAT.error : "Notification dans 5 secondes : tu peux verrouiller l'écran."); return; }
     case "gh-test": {
       if (!CFG.token) { toast("Colle d'abord ton jeton GitHub."); return; }
       b.disabled = true; setSyncText("Test de la connexion…");
