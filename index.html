@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14181d">
+<meta name="description" content="Carnet de musculation personnel : séances, minuteur de repos, progression et records, sauvegarde sur GitHub.">
+<title>Carnet de musculation</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top" id="top"></header>
+<main id="main"><p class="muted">Chargement…</p></main>
+<nav class="bottom" id="nav" aria-label="Navigation principale">
+  <a href="#accueil" data-nav="accueil"><span class="ico" aria-hidden="true">▶</span>Séance</a>
+  <a href="#historique" data-nav="historique"><span class="ico" aria-hidden="true">☰</span>Historique</a>
+  <a href="#exercices" data-nav="exercices"><span class="ico" aria-hidden="true">↗</span>Progrès</a>
+  <a href="#outils" data-nav="outils"><span class="ico" aria-hidden="true">⊙</span>Outils</a>
+  <a href="#reglages" data-nav="reglages"><span class="ico" aria-hidden="true">⚙</span>Réglages</a>
+</nav>
+<div class="timer" id="timer" hidden>
+  <div class="timer-inner">
+    <div class="t-time" id="t-time">0:00</div>
+    <div class="t-ctrl">
+      <button type="button" data-act="t-minus" aria-label="Retirer 15 secondes">−15</button>
+      <button type="button" data-act="t-plus" aria-label="Ajouter 15 secondes">+15</button>
+      <button type="button" data-act="t-stop">OK</button>
+    </div>
+    <div class="t-bar"><i id="t-bar"></i></div>
+    <div class="t-next" id="t-next"></div>
+  </div>
+</div>
+<div id="modal-root"></div>
+<script src="app.js"></script>
+</body>
+</html>

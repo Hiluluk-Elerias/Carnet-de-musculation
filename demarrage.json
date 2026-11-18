@@ -1,0 +1,148 @@
+{
+ "version": 1,
+ "exercices": [
+  {
+   "id": "tractions",
+   "nom": "Tractions",
+   "mode": "corps",
+   "min": 5,
+   "max": 8,
+   "incr": 2.5,
+   "repos": 30,
+   "unite": "0 = poids du corps, + lest, − assistance"
+  },
+  {
+   "id": "face-pull",
+   "nom": "Face pull à la poulie haute",
+   "mode": "charge",
+   "min": 12,
+   "max": 15,
+   "incr": 2,
+   "repos": 30,
+   "unite": "Poulie"
+  },
+  {
+   "id": "pallof",
+   "nom": "Pallof press à la poulie",
+   "mode": "charge",
+   "min": 10,
+   "max": 12,
+   "incr": 1,
+   "repos": 120,
+   "unite": "Reps par côté"
+  },
+  {
+   "id": "split-squat",
+   "nom": "Split squat bulgare aux haltères",
+   "mode": "charge",
+   "min": 6,
+   "max": 8,
+   "incr": 2,
+   "repos": 20,
+   "unite": "Par haltère, reps par jambe"
+  },
+  {
+   "id": "dev-militaire",
+   "nom": "Développé militaire debout aux haltères",
+   "mode": "charge",
+   "min": 8,
+   "max": 10,
+   "incr": 2,
+   "repos": 120,
+   "unite": "Par haltère"
+  },
+  {
+   "id": "rdl",
+   "nom": "Soulevé de terre roumain à la barre",
+   "mode": "charge",
+   "min": 8,
+   "max": 10,
+   "incr": 4,
+   "repos": 20,
+   "unite": "Barre chargée"
+  },
+  {
+   "id": "dips",
+   "nom": "Dips",
+   "mode": "corps",
+   "min": 6,
+   "max": 10,
+   "incr": 2,
+   "repos": 105,
+   "unite": "0 = poids du corps, + lest, − assistance"
+  },
+  {
+   "id": "curl-inverse",
+   "nom": "Curl inversé à la barre EZ",
+   "mode": "charge",
+   "min": 12,
+   "max": 15,
+   "incr": 2,
+   "repos": 15,
+   "unite": "Barre EZ chargée"
+  },
+  {
+   "id": "releves-jambes",
+   "nom": "Relevés de jambes suspendu",
+   "mode": "corps",
+   "min": 8,
+   "max": 12,
+   "incr": 0,
+   "repos": 120,
+   "unite": "Poids du corps"
+  }
+ ],
+ "programmes": [
+  {
+   "id": "fullbody",
+   "nom": "Full-body",
+   "items": [
+    {
+     "exo": "tractions",
+     "bloc": "A1",
+     "series": 4
+    },
+    {
+     "exo": "face-pull",
+     "bloc": "A2",
+     "series": 3
+    },
+    {
+     "exo": "pallof",
+     "bloc": "A3",
+     "series": 3
+    },
+    {
+     "exo": "split-squat",
+     "bloc": "B1",
+     "series": 3
+    },
+    {
+     "exo": "dev-militaire",
+     "bloc": "B2",
+     "series": 3
+    },
+    {
+     "exo": "rdl",
+     "bloc": "C1",
+     "series": 3
+    },
+    {
+     "exo": "dips",
+     "bloc": "C2",
+     "series": 3
+    },
+    {
+     "exo": "curl-inverse",
+     "bloc": "D",
+     "series": 2
+    },
+    {
+     "exo": "releves-jambes",
+     "bloc": "Option",
+     "series": 2
+    }
+   ]
+  }
+ ]
+}
