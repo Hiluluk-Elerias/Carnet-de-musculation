@@ -2,7 +2,9 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.1.0";
+/** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft" };
 const DIFF = [
   { v: 1, t: "Très facile", c: "#16a34a" },
@@ -231,9 +233,36 @@ function scheduleNotif(sec) {
     try { const reg = await navigator.serviceWorker.ready; reg.showNotification("Repos terminé", { body: T.label.replace(/<[^>]+>/g, ""), tag: "repos", renotify: true, vibrate: [300, 150, 300, 150, 500], icon: "icons/icon-192.png" }); } catch (e) {}
   }, sec * 1000);
 }
+// ---- Appli Android : notification programmée par Android, qui sonne et vibre même écran verrouillé.
+function nativeLN() {
+  if (!NATIVE) return null;
+  try { return (window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) || window.Capacitor.registerPlugin("LocalNotifications"); } catch (e) { return null; }
+}
+const NAT = { ready: false, exact: null };
+async function nativeSetup() {
+  const ln = nativeLN(); if (!ln || NAT.ready) return;
+  try {
+    await ln.createChannel({ id: "repos", name: "Fin du repos", description: "Sonne et vibre à la fin du temps de repos", importance: 5, visibility: 1, vibration: true });
+    let p = await ln.checkPermissions(); if (p.display !== "granted") p = await ln.requestPermissions();
+    if (ln.checkExactNotificationSetting) { const ex = await ln.checkExactNotificationSetting(); NAT.exact = ex.exact_alarm === "granted"; }
+    NAT.ready = true;
+  } catch (e) {}
+}
+async function nativeSchedule(sec) {
+  const ln = nativeLN(); if (!ln) return;
+  try {
+    await ln.cancel({ notifications: [{ id: 1 }] });
+    if (sec <= 0) return;
+    await ln.schedule({ notifications: [{ id: 1, title: "Repos terminé", body: T.label.replace(/<[^>]+>/g, ""), channelId: "repos", schedule: { at: new Date(Date.now() + sec * 1000), allowWhileIdle: true } }] });
+  } catch (e) {}
+}
+async function nativeCancel() { const ln = nativeLN(); if (!ln) return; try { await ln.cancel({ notifications: [{ id: 1 }] }); if (ln.removeAllDeliveredNotifications) await ln.removeAllDeliveredNotifications(); } catch (e) {} }
+function scheduleAlert(sec) { if (NATIVE) nativeSchedule(sec); else { scheduleBeeps(sec); scheduleNotif(sec); } }
+function cancelAlert() { if (NATIVE) nativeCancel(); else { cancelBeeps(); clearTimeout(T.notifTimer); } }
+
 function startTimer(sec, label) {
   T.total = sec; T.end = Date.now() + sec * 1000; T.running = true; T.buzzed = false; T.label = label;
-  scheduleBeeps(sec); scheduleNotif(sec);
+  scheduleAlert(sec);
   $("#timer").hidden = false; $("#timer").classList.remove("over"); document.body.classList.add("timing");
   $("#t-next").innerHTML = label;
   tickTimer();
@@ -242,16 +271,16 @@ function adjustTimer(delta) {
   if (!T.running) return;
   T.end += delta * 1000; T.total = Math.max(1, T.total + delta);
   const left = (T.end - Date.now()) / 1000;
-  if (left > 0) { T.buzzed = false; $("#timer").classList.remove("over"); scheduleBeeps(left); scheduleNotif(left); } else { cancelBeeps(); clearTimeout(T.notifTimer); }
+  if (left > 0) { T.buzzed = false; $("#timer").classList.remove("over"); scheduleAlert(left); } else cancelAlert();
   tickTimer();
 }
-function stopTimer() { T.running = false; cancelBeeps(); clearTimeout(T.notifTimer); $("#timer").hidden = true; document.body.classList.remove("timing"); }
+function stopTimer() { T.running = false; cancelAlert(); $("#timer").hidden = true; document.body.classList.remove("timing"); }
 function tickTimer() {
   if (!T.running) return;
   const left = Math.round((T.end - Date.now()) / 1000), a = Math.abs(left);
   $("#t-time").textContent = (left < 0 ? "+" : "") + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0");
   $("#t-bar").style.width = Math.max(0, Math.min(100, (left / T.total) * 100)) + "%";
-  if (left <= 0 && !T.buzzed) { T.buzzed = true; $("#timer").classList.add("over"); try { navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 500]); } catch (e) {} }
+  if (left <= 0 && !T.buzzed) { T.buzzed = true; $("#timer").classList.add("over"); if (!NATIVE) { try { navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 500]); } catch (e) {} } }
 }
 setInterval(() => { tickTimer(); tickChrono(); }, 250);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && DRAFT) wakeLock(true); });
@@ -268,7 +297,7 @@ function startSeance(progId) {
   saveDraft(); askNotifications(); wakeLock(true);
   location.hash = "#seance";
 }
-function askNotifications() { try { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); } catch (e) {} }
+function askNotifications() { if (NATIVE) { nativeSetup(); return; } try { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); } catch (e) {} }
 function prevSetsOf(exoId) { const h = historyOf(exoId); return h.length ? h[h.length - 1].x.series || [] : []; }
 function nextAfter(xi) {
   const xs = DRAFT.exercices;
@@ -556,9 +585,12 @@ function viewReglages() {
     <label class="field wide" for="c-barres"><span>Barres (nom = poids, une par ligne)</span><textarea id="c-barres" rows="3" data-cfg="barres">${esc(CFG.barres.map((b) => `${b.nom} = ${fmt(b.poids)}`).join("\n"))}</textarea></label>
     <label class="field" for="c-son"><span>Bip de fin de repos</span><select id="c-son" data-cfg="son"><option value="1"${CFG.son ? " selected" : ""}>Activé</option><option value="0"${CFG.son ? "" : " selected"}>Désactivé</option></select></label>
     </div></div>
+    ${NATIVE ? `<div class="card"><h3>Minuteur de l'appli Android</h3>
+    <p class="muted small">La fin du repos est une notification Android : elle sonne et vibre même écran verrouillé. ${NAT.exact === false ? "Les alarmes exactes ne sont pas autorisées : le bip peut arriver avec quelques secondes de retard." : ""}</p>
+    <div class="row wrap"><button type="button" class="btn secondary" data-act="nat-perm">Autoriser les notifications</button><button type="button" class="btn secondary" data-act="nat-exact">Autoriser les alarmes exactes</button><button type="button" class="btn secondary" data-act="nat-test">Tester (5 s)</button></div></div>` : ""}
     <div class="card"><h3>Données</h3>
     <div class="row wrap"><button type="button" class="btn secondary" data-act="export">Exporter (JSON)</button><button type="button" class="btn secondary" data-act="export-csv">Exporter (CSV)</button><label class="btn secondary" for="imp">Importer un JSON</label><input id="imp" type="file" accept="application/json,.json" hidden></div>
-    <p class="muted small">Pour installer l'appli : menu ⋮ de Chrome → « Ajouter à l'écran d'accueil ». Pendant une séance, l'écran reste allumé pour que le bip de repos sonne. Version ${APP_VERSION}.</p></div>`;
+    <p class="muted small">${NATIVE ? "Dans l'appli Android, les exports se font plutôt depuis la version web, sur ordinateur." : "Appli Android : à télécharger dans les Releases du dépôt. Sinon, menu ⋮ de Chrome → « Ajouter à l'écran d'accueil » ; pendant une séance l'écran reste allumé pour que le bip sonne."} Version ${APP_VERSION}${NATIVE ? " (Android)" : ""}.</p></div>`;
 }
 
 // ============================================================ Rendu et navigation
@@ -658,6 +690,9 @@ document.addEventListener("click", async (ev) => {
       e.incr = Math.max(0, num($("#e-incr").value)); e.repos = Math.max(0, Math.round(num($("#e-repos").value))); e.unite = $("#e-unite").value.trim();
       saveDB(); markProg(); toast("Exercice enregistré."); return render();
     }
+    case "nat-perm": NAT.ready = false; await nativeSetup(); toast("Notifications : vérifié."); return render();
+    case "nat-exact": { const ln = nativeLN(); try { if (ln && ln.changeExactNotificationSetting) await ln.changeExactNotificationSetting(); } catch (e) {} NAT.ready = false; await nativeSetup(); return render(); }
+    case "nat-test": { await nativeSetup(); T.label = "Test du minuteur"; await nativeSchedule(5); toast("Notification dans 5 secondes : tu peux verrouiller l'écran."); return; }
     case "gh-test": {
       if (!CFG.token) { toast("Colle d'abord ton jeton GitHub."); return; }
       b.disabled = true; setSyncText("Test de la connexion…");
@@ -735,6 +770,13 @@ async function boot() {
   }
   render();
   if (DRAFT) wakeLock(true);
+  if (NATIVE) {
+    nativeSetup();
+    try {
+      const App = (window.Capacitor.Plugins && window.Capacitor.Plugins.App) || window.Capacitor.registerPlugin("App");
+      App.addListener("backButton", () => { if ($("#modal-root").innerHTML) { $("#modal-root").innerHTML = ""; return; } if (location.hash && location.hash !== "#accueil") history.back(); else App.minimizeApp ? App.minimizeApp() : App.exitApp(); });
+    } catch (e) {}
+  }
   if (CFG.token) sync(); else setSyncText(pendingCount() ? "Non synchronisé" : "Sur ce téléphone seulement");
 }
 boot();

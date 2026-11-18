@@ -8,7 +8,7 @@ Application web personnelle pour suivre ses séances de musculation, dans l'espr
 - records (1RM estimé, charge max, volume) et graphique de progression par exercice ;
 - programmes et exercices modifiables, séries d'échauffement ;
 - calculateur de disques et tableau de pourcentages du 1RM ;
-- fonctionne hors ligne et s'installe sur Android (Chrome → « Ajouter à l'écran d'accueil »).
+- fonctionne hors ligne ; existe en version web et en appli Android (APK).
 
 Les données ne sont pas dans ce dépôt public : elles sont enregistrées dans le dépôt privé
 `Carnet-de-musculation-data` (`seances.json` et `programmes.json`) grâce à un jeton GitHub saisi dans l'appli.
@@ -17,6 +17,20 @@ Les données ne sont pas dans ce dépôt public : elles sont enregistrées dans 
 
 Settings → Pages → Source : « Deploy from a branch », branche `main`, dossier `/ (root)`.
 L'appli est ensuite disponible sur `https://hiluluk-elerias.github.io/Carnet-de-musculation/`.
+
+## Appli Android (APK)
+
+Le dossier `apk/` contient une coque Android (Capacitor) qui ouvre la version en ligne de l'appli
+et lui donne accès aux notifications d'Android : la fin du repos sonne et vibre même écran verrouillé.
+
+L'APK est compilé par GitHub Actions (`.github/workflows/apk.yml`) à chaque modification du dossier `apk/`,
+ou à la main depuis l'onglet Actions → « Appli Android (APK) » → Run workflow.
+Il est publié dans la release **android** du dépôt (fichier `carnet-musculation.apk`).
+
+Signature : secrets `KEYSTORE_BASE64` et `KEYSTORE_PASSWORD` (alias `carnet`). Sans eux, une clé temporaire est utilisée
+et chaque nouvelle version demande de désinstaller la précédente.
+
+Les changements de `index.html`, `app.js` ou `style.css` arrivent dans l'appli Android sans réinstaller l'APK.
 
 ## Jeton GitHub
 

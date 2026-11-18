@@ -1,0 +1,13 @@
+{
+  "appId": "io.github.hilulukelerias.carnetmuscu",
+  "appName": "Carnet muscu",
+  "webDir": "www",
+  "server": {
+    "url": "https://hiluluk-elerias.github.io/Carnet-de-musculation/",
+    "errorPath": "hors-ligne.html",
+    "allowNavigation": ["hiluluk-elerias.github.io"]
+  },
+  "android": {
+    "backgroundColor": "#14181d"
+  }
+}
