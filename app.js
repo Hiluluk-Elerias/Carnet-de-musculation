@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.5.0";
+const APP_VERSION = "1.6.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft", poids: "cm.poids" };
@@ -658,34 +658,49 @@ function viewAccueil() {
     const stag = p.items.filter((it) => stagnation(it.exo)).map((it) => exo(it.exo).nom);
     if (stag.length && !DRAFT) h += `<div class="banner warn"><b>Décharge conseillée</b> pour ${esc(p.nom)} : pas de progrès depuis 3 séances sur ${stag.map(esc).join(", ")}. Une séance plus légère (−10 %, une série de moins) aide à repartir.<div class="row" style="margin-top:8px"><button type="button" class="btn secondary" data-act="start-dl" data-id="${esc(p.id)}">Séance de décharge</button></div></div>`;
     h += `<div class="card"><a class="row link" href="#apercu/${esc(p.id)}"><div class="grow"><h3>${esc(p.nom)}</h3><div class="muted small">${p.items.length} exercices · ${lastP ? "dernière fois le " + dateLong(lastP.date) : "jamais fait"}</div></div><span class="muted" aria-hidden="true">›</span></a>
-      <a class="thumbs" href="#apercu/${esc(p.id)}" aria-label="Voir le détail du programme">${p.items.map((it) => thumb(exo(it.exo), "xs", false)).join("")}</a>
+      ${progTable(p, false, true)}
       <div class="row"><button type="button" class="btn grow" data-act="start" data-id="${esc(p.id)}" ${DRAFT ? "disabled" : ""}>Commencer</button><a class="btn secondary" href="#apercu/${esc(p.id)}">Détail</a><a class="btn secondary" href="#programme/${esc(p.id)}">Modifier</a></div></div>`;
   });
   h += `<button type="button" class="btn secondary" data-act="new-prog">Nouveau programme</button>`;
   return h;
 }
 
-/** Détail d'un programme, façon Hevy : illustration puis séries, reps et charge proposées, l'une sous l'autre. */
+/** Détail d'un programme : tableau comme dans le carnet Word (bloc, exercice, séries × reps, charge, enchaînement). */
 function viewApercu(id) {
   const p = DB.programmes.find((x) => x.id === id);
   if (!p) { header("Programme introuvable"); return `<p><a href="#accueil">Retour</a></p>`; }
   const dl = UI.apercuDl === id;
-  header(p.nom, `${p.items.length} exercices · séance ${nextNum()}${dl ? " · décharge" : ""}`);
+  header(p.nom, `Séance ${nextNum()} · ${dateLong(todayISO())}${dl ? " · décharge" : ""}`);
   let h = `<div class="seg" role="group" aria-label="Type de séance"><button type="button" data-act="ap-mode" data-id="${esc(p.id)}" data-v="0" aria-pressed="${!dl}">Séance normale</button><button type="button" data-act="ap-mode" data-id="${esc(p.id)}" data-v="1" aria-pressed="${dl}">Séance de décharge</button></div>`;
-  groupBlocs(p.items).forEach((g) => {
-    if (g.ss) h += `<div class="superset"><div class="ss-head">Superset ${esc(g.lettre)} · ${g.items.length} exercices enchaînés</div>`;
-    g.items.forEach(({ it }) => {
-      const e = exo(it.exo), s = suggest(it.exo, it.series, { decharge: dl });
-      h += `<section class="ex"><div class="ex-head">${thumb(e, "md")}<div class="grow"><div class="row" style="gap:8px">${it.bloc ? `<span class="bloc">${esc(it.bloc)}</span>` : ""}<h3>${esc(e.nom)}</h3></div>
-        <div class="ex-meta">${fourchette(e)} · repos ${restLabel(e.repos)}${isInter(e) ? ` · ${num(e.travail) || 7} s / ${num(e.pause) || 3} s` : ""}</div></div></div>
-        <div class="goal-row">${goalHtml(s, e)}${bodyMap(e, "md")}</div>
-        <ol class="plan">${Array.from({ length: s.n }, (_, i) => `<li><span class="plan-n">${i + 1}</span><span class="plan-r">${vLabel(s.reps, e)}</span><span class="plan-k">${esc(kgLabel(s.kg, e))}</span></li>`).join("")}</ol>
-        <p class="muted small">${s.stagne && !dl ? '<span class="pr">Stagnation</span> ' : ""}${esc(s.consigne)}</p></section>`;
-    });
-    if (g.ss) h += `</div>`;
-  });
+  h += `<div class="card">${progTable(p, dl, false)}</div>`;
+  const notes = p.items.map((it) => { const s = suggest(it.exo, it.series, { decharge: dl }); return s.last ? `<li><b>${esc(it.bloc ? it.bloc + " · " : "")}${esc(exo(it.exo).nom)}</b>${s.stagne && !dl ? ' <span class="pr">Stagnation</span>' : ""} — ${esc(s.consigne)}</li>` : ""; }).join("");
+  if (notes) h += `<div class="card"><h3>Pourquoi ces charges</h3><ul class="notes">${notes}</ul></div>`;
   h += `<div class="row"><a class="btn secondary" href="#programme/${esc(p.id)}">Modifier</a><button type="button" class="btn grow" data-act="${dl ? "start-dl" : "start"}" data-id="${esc(p.id)}" ${DRAFT ? "disabled" : ""}>${DRAFT ? "Une séance est déjà en cours" : dl ? "Commencer la décharge" : "Commencer la séance"}</button></div>`;
   return h;
+}
+/** Charge écrite comme dans le carnet : « Poids du corps », « 2 × 12 kg » pour les haltères. */
+function chargeTxt(kg, e) {
+  const k = num(kg);
+  if (isCorps(e)) return k === 0 ? "PdC" : k > 0 ? `PdC + ${fmt(k)} kg` : `PdC − ${fmt(-k)} kg`;
+  return /halt[eè]re/i.test(e.unite || "") ? `2 × ${fmt(k)} kg` : `${fmt(k)} kg`;
+}
+function seriesTxt(n, v, e) {
+  const suf = /par c[oô]t[eé]/i.test(e.unite || "") ? " / côté" : /par jambe/i.test(e.unite || "") ? " / jambe" : "";
+  return isTemps(e) ? `${n} × ${v} s` : isInter(e) ? `${n} × ${v} susp.` : `${n} × ${v}${suf}`;
+}
+/** Tableau du programme. compact : sans le repos et l'enchaînement sous chaque exercice (accueil). */
+function progTable(p, dl, compact) {
+  let rows = "";
+  groupBlocs(p.items).forEach((g) => {
+    g.items.forEach(({ it }, k) => {
+      const e = exo(it.exo), s = suggest(it.exo, it.series, { decharge: dl });
+      let ens = restLabel(e.repos);
+      if (g.ss) ens += k < g.items.length - 1 ? `, puis ${g.items[k + 1].it.bloc}` : `, puis retour ${g.items[0].it.bloc}`;
+      const sous = [isInter(e) ? `${num(e.travail) || 7} s / ${num(e.pause) || 3} s` : "", compact ? "" : `Repos ${ens}`].filter(Boolean).join(" · ");
+      rows += `<tr class="${k === 0 ? "grp" : ""}"><td class="b">${esc(it.bloc || "")}</td><td>${esc(e.nom)}${sous ? `<div class="muted small">${esc(sous)}</div>` : ""}</td><td class="n nw">${esc(seriesTxt(s.n, s.reps, e))}</td><td class="nw">${esc(chargeTxt(s.kg, e))}</td></tr>`;
+    });
+  });
+  return `<div class="tbl-wrap"><table class="data prog${compact ? " compact" : ""}"><thead><tr><th>Bloc</th><th>Exercice</th><th class="n">Séries × reps</th><th>Charge</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 /** Regroupe les exercices d'un même bloc (A1, A2, A3…) en superset. */
 function groupBlocs(items) {
@@ -723,11 +738,11 @@ function exoCard(x, xi) {
   const complete = x.series.length && x.series.every((z) => z.ok) && diffOf(x);
   const chrono = isTemps(e) || isInter(e);
   let h = `<section class="ex${x.saute ? " skipped" : ""}${complete ? " complete" : ""}" aria-labelledby="x-${xi}">
-    <div class="ex-head">${thumb(e, "md")}<div class="grow"><div class="row" style="gap:8px">${x.bloc ? `<span class="bloc">${esc(x.bloc)}</span>` : ""}<h3 id="x-${xi}">${esc(e.nom)}</h3></div>
+    <div class="ex-head"><div class="grow"><div class="row" style="gap:8px">${x.bloc ? `<span class="bloc">${esc(x.bloc)}</span>` : ""}<h3 id="x-${xi}">${esc(e.nom)}</h3></div>
     <div class="ex-meta">${fourchette(e)} · repos ${restLabel(e.repos)}${isInter(e) ? ` · ${num(e.travail) || 7} s / ${num(e.pause) || 3} s` : ""}${e.unite ? " · " + esc(e.unite) : ""}</div></div>
     <button type="button" class="mini" data-act="x-menu" data-x="${xi}" aria-label="Options de l'exercice">•••</button></div>`;
   if (x.saute) return h + `<button type="button" class="btn secondary" data-act="x-skip" data-x="${xi}">Reprendre cet exercice</button></section>`;
-  h += `<div class="hint-row"><div class="goal-row">${goalHtml(s, e)}${bodyMap(e, "md")}</div><p class="muted small">${s.stagne && !DRAFT.decharge ? '<span class="pr">Stagnation</span> ' : ""}${esc(s.consigne)}</p></div>
+  h += `<div class="hint-row"><div class="goal-row">${goalHtml(s, e)}</div><p class="muted small">${s.stagne && !DRAFT.decharge ? '<span class="pr">Stagnation</span> ' : ""}${esc(s.consigne)}</p></div>
     <table class="sets"><thead><tr><th scope="col">Série</th><th scope="col">Précédent</th><th scope="col">${isCorps(e) ? "± kg" : "kg"}</th><th scope="col">${isTemps(e) ? "Sec." : isInter(e) ? "Susp." : "Reps"}</th><th scope="col"><span class="sr">Fait</span>${chrono ? "▶" : "✓"}</th></tr></thead><tbody>`;
   let wn = 0;
   x.series.forEach((z, si) => {
@@ -775,7 +790,7 @@ function viewSeanceDetail(id) {
     const before = bestOf(x.exo, others), now = bestOf(x.exo, [s]);
     const isPr = historyOf(x.exo, others).length && now.score > before.score + 0.01;
     let wn = 0;
-    h += `<div class="card"><div class="row">${thumb(e, "sm")}<a class="grow" href="#exercice/${esc(x.exo)}"><h3>${esc(e.nom)}</h3></a>${isPr ? '<span class="pr">Record</span>' : ""}${d ? `<span class="pill" style="background:${d.c}" title="Difficulté ${d.v}">${d.v}</span>` : ""}</div>
+    h += `<div class="card"><div class="row">${x.bloc ? `<span class="bloc">${esc(x.bloc)}</span>` : ""}<a class="grow" href="#exercice/${esc(x.exo)}"><h3>${esc(e.nom)}</h3></a>${isPr ? '<span class="pr">Record</span>' : ""}${d ? `<span class="pill" style="background:${d.c}" title="Difficulté ${d.v}">${d.v}</span>` : ""}</div>
       <div class="tbl-wrap"><table class="data"><tbody>${x.series.map((z) => `<tr><td>${z.t === "E" ? "Échauff." : "Série " + ++wn}</td><td class="n">${esc(kgLabel(z.kg, e))}</td><td class="n">× ${esc(vLabel(vOf(z, e), e))}</td><td class="n muted">${hasE1rm(e) ? `1RM ≈ ${fmt(e1rm(z.kg, z.reps, e, s.pc), 1)}` : ""}${z.rir !== undefined ? ` · RIR ${z.rir >= 4 ? "4+" : z.rir}` : ""}</td></tr>`).join("")}</tbody></table></div>
       ${x.note ? `<div class="muted small">${esc(x.note)}</div>` : ""}</div>`;
   });
@@ -822,7 +837,7 @@ function viewExercices() {
     const hist = historyOf(e.id), b = bestOf(e.id);
     const last = hist.length ? hist[hist.length - 1] : null;
     const lastTop = last ? workSets(last.x).reduce((m, z) => (num(z.kg) > num(m.kg) ? z : m), workSets(last.x)[0]) : null;
-    h += `<a class="item" href="#exercice/${esc(e.id)}">${thumb(e, "sm", false)}<div class="grow"><b>${esc(e.nom)}</b>${stagnation(e.id) ? ' <span class="pr">Stagnation</span>' : ""}<div class="muted small">${last ? `Dernière fois : ${esc(kgLabel(lastTop.kg, e))} × ${esc(vLabel(vOf(lastTop, e), e))} (${dateShort(last.s.date)})` : "Pas encore fait"}</div></div><div class="r">${hasE1rm(e) && b.e1rm ? `1RM ≈ ${fmt(b.e1rm, 0)} kg` : b.maxReps ? `max ${esc(vLabel(b.maxReps, e))}` : ""}<br>${hist.length} séance${hist.length > 1 ? "s" : ""}</div></a>`;
+    h += `<a class="item" href="#exercice/${esc(e.id)}"><div class="grow"><b>${esc(e.nom)}</b>${stagnation(e.id) ? ' <span class="pr">Stagnation</span>' : ""}<div class="muted small">${last ? `Dernière fois : ${esc(kgLabel(lastTop.kg, e))} × ${esc(vLabel(vOf(lastTop, e), e))} (${dateShort(last.s.date)})` : "Pas encore fait"}</div></div><div class="r">${hasE1rm(e) && b.e1rm ? `1RM ≈ ${fmt(b.e1rm, 0)} kg` : b.maxReps ? `max ${esc(vLabel(b.maxReps, e))}` : ""}<br>${hist.length} séance${hist.length > 1 ? "s" : ""}</div></a>`;
   });
   h += `</div><button type="button" class="btn secondary" data-act="new-exo">Nouvel exercice</button>`;
   return h;
@@ -853,7 +868,7 @@ function viewExercice(id) {
   header(e.nom, esc(e.unite || ""));
   const hist = historyOf(id), b = bestOf(id);
   const id0 = imgId(e);
-  let h = `${id0 && id0 !== "_carte" ? thumb(e, "lg", false) : ""}<div class="card"><div class="map-modal">${bodyMap(e, "lg")}<p class="small">${musclesText(e) || "Muscles non renseignés : choisis-les dans les réglages ci-dessous."}</p></div></div><div class="records">
+  let h = `<p class="small">${musclesText(e) || "Muscles non renseignés : choisis-les dans les réglages ci-dessous (ils servent au volume par muscle)."}</p><div class="records">
     ${hasE1rm(e) ? `<div class="stat"><b>${b.e1rm ? fmt(b.e1rm, 1) : "—"}</b><span>1RM estimé (kg)${b.e1rmSet ? ` · ${esc(kgLabel(b.e1rmSet.kg, e))} × ${b.e1rmSet.reps}` : ""}</span></div>` : ""}
     <div class="stat"><b>${b.maxKgSet ? esc(kgLabel(b.maxKg, e)) : "—"}</b><span>charge max${b.maxKgSet ? ` · × ${esc(vLabel(vOf(b.maxKgSet, e), e))} le ${dateShort(b.maxKgSet.date)}` : ""}</span></div>
     <div class="stat"><b>${b.maxReps ? esc(vLabel(b.maxReps, e)) : "—"}</b><span>max sur une série</span></div>
@@ -872,7 +887,6 @@ function viewExercice(id) {
       <label class="field" for="e-incr"><span>Palier (kg)</span><input id="e-incr" inputmode="decimal" value="${fmt(e.incr)}"></label>
       <label class="field" for="e-repos"><span>Repos (s)</span><input id="e-repos" inputmode="numeric" value="${e.repos}"></label>
       <label class="field wide" for="e-unite"><span>Précision</span><input id="e-unite" value="${esc(e.unite || "")}" placeholder="Par haltère, reps par jambe…"></label>
-      <div class="field wide"><span>Illustration</span><div class="row">${thumb(e, "sm", false)}<button type="button" class="btn secondary" data-act="pick-img" data-id="${esc(e.id)}">Choisir dans la bibliothèque</button></div></div>
       <div class="field wide"><span>Muscles travaillés (toucher : principal → secondaire → aucun)</span><div class="chips">${Object.entries(ZONES).map(([k, z]) => { const m = musclesOf(e), st = m.p.includes(k) ? "p" : m.s.includes(k) ? "s" : ""; return `<button type="button" class="chip ${st}" data-act="mz" data-id="${esc(e.id)}" data-k="${k}" aria-pressed="${!!st}">${esc(z[2])}${st === "p" ? " · principal" : st === "s" ? " · secondaire" : ""}</button>`; }).join("")}</div></div>
     </div><button type="button" class="btn" data-act="save-exo" data-id="${esc(e.id)}">Enregistrer</button></div>`;
   return h;

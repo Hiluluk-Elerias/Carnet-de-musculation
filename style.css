@@ -149,6 +149,15 @@ ol.plan li:last-child { border-bottom: 0; }
 .plan-n { width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
 .plan-k { font-weight: 600; }
 
+/* Tableau du programme, comme dans le carnet Word */
+table.prog th { white-space: nowrap; }
+table.prog td { font-size: 14px; }
+table.prog td.b { font-family: var(--display); font-size: 17px; font-weight: 700; white-space: nowrap; }
+table.prog tr.grp td { border-top: 2px solid var(--line); }
+table.prog.compact td { padding: 5px 4px; }
+table.prog td.nw { white-space: nowrap; }
+ul.notes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+
 /* Lists and tables */
 .list { display: flex; flex-direction: column; gap: 8px; }
 .item { display: flex; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; text-decoration: none; color: inherit; }
