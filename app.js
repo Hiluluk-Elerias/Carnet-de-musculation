@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.4.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft" };
@@ -113,30 +113,86 @@ function suggest(exoId, defaultSets) {
   return { ...out, n, last };
 }
 
-// ============================================================ Illustrations (Free Exercise DB, domaine public)
-const IMG_DEFAUT = { tractions: "Pullups", "face-pull": "Face_Pull", pallof: "Pallof_Press", "split-squat": "Split_Squat_with_Dumbbells", "dev-militaire": "Standing_Dumbbell_Press", rdl: "Romanian_Deadlift", dips: "Dips_-_Triceps_Version", "curl-inverse": "Reverse_Barbell_Curl", "releves-jambes": "Hanging_Leg_Raise" };
-const IMG_LOCALES = new Set(Object.values(IMG_DEFAUT));
-const MUSCLES = { abdominals: "abdominaux", abductors: "abducteurs", adductors: "adducteurs", biceps: "biceps", calves: "mollets", chest: "pectoraux", forearms: "avant-bras", glutes: "fessiers", hamstrings: "ischio-jambiers", lats: "grands dorsaux", "lower back": "lombaires", "middle back": "milieu du dos", neck: "cou", quadriceps: "quadriceps", shoulders: "épaules", traps: "trapèzes", triceps: "triceps" };
-const imgId = (e) => { if (!e || e.image === "_aucune") return ""; return e.image || IMG_DEFAUT[e.id] || ""; };
-const imgUrl = (id, f) => IMG_LOCALES.has(id) ? `img/exos/${id}-${f}.jpg` : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${encodeURIComponent(id)}/${f}.jpg`;
-/** Vignette animée : alterne position de départ et d'arrivée. */
+// ============================================================ Illustrations et muscles
+// Dessins : Everkinetic (CC BY-SA 4.0). Photos : Free Exercise DB (domaine public).
+// Cartes musculaires : projet wger, d'après Wikimedia Commons.
+const IMG_DEFAUT = { tractions: "ek:0087", dips: "ek:0054", rdl: "ek:0118", "curl-inverse": "ek:0257", "split-squat": "ek:0129", "dev-militaire": "ekpng:dumbbell-shoulder-press", "face-pull": "_carte", pallof: "_carte", "releves-jambes": "_carte" };
+const DESSINS_LOCAUX = new Set(["0087", "0054", "0118", "0257", "0129"]);
+const PHOTOS_LOCALES = new Set(["Pullups", "Face_Pull", "Pallof_Press", "Split_Squat_with_Dumbbells", "Standing_Dumbbell_Press", "Romanian_Deadlift", "Dips_-_Triceps_Version", "Reverse_Barbell_Curl", "Hanging_Leg_Raise"]);
+/** Zones de la carte musculaire : [n° de calque, face (f) ou dos (b), nom]. */
+const ZONES = {
+  pectoraux: [4, "f", "Pectoraux"], "deltoides-ant": [2, "f", "Deltoïdes antérieurs"], "deltoides-post": [2, "b", "Deltoïdes postérieurs"],
+  biceps: [1, "f", "Biceps"], brachial: [13, "f", "Brachial"], triceps: [5, "b", "Triceps"], abdos: [6, "f", "Abdominaux"], obliques: [14, "f", "Obliques"],
+  dentele: [3, "f", "Dentelé"], quadriceps: [10, "f", "Quadriceps"], ischios: [11, "b", "Ischio-jambiers"], fessiers: [8, "b", "Fessiers"],
+  mollets: [7, "b", "Mollets"], trapezes: [9, "b", "Trapèzes"], dorsaux: [12, "b", "Grands dorsaux"], lombaires: [16, "b", "Lombaires"]
+};
+const MUSCLES_DEFAUT = {
+  tractions: { p: ["dorsaux", "biceps"], s: ["brachial", "trapezes"] }, "face-pull": { p: ["deltoides-post", "trapezes"], s: [] },
+  pallof: { p: ["obliques", "abdos"], s: [] }, "split-squat": { p: ["quadriceps", "fessiers"], s: ["ischios"] },
+  "dev-militaire": { p: ["deltoides-ant"], s: ["triceps", "trapezes"] }, rdl: { p: ["ischios", "fessiers"], s: ["lombaires"] },
+  dips: { p: ["triceps", "pectoraux"], s: ["deltoides-ant"] }, "curl-inverse": { p: ["brachial"], s: ["biceps"] }, "releves-jambes": { p: ["abdos"], s: ["obliques"] }
+};
+/** Correspondance des noms de muscles des bibliothèques vers les zones de la carte. */
+const VERS_ZONE = {
+  chest: "pectoraux", "pectoralis major": "pectoraux", shoulders: "deltoides-ant", deltoid: "deltoides-ant", biceps: "biceps", "biceps brachii": "biceps",
+  triceps: "triceps", "triceps brachii": "triceps", abdominals: "abdos", obliques: "obliques", quadriceps: "quadriceps", hamstrings: "ischios",
+  "ischiocrural muscles": "ischios", glutes: "fessiers", "glutaeus maximus": "fessiers", calves: "mollets", gastrocnemius: "mollets", soleus: "mollets",
+  traps: "trapezes", trapezius: "trapezes", "middle back": "trapezes", lats: "dorsaux", "latissimus dorsi": "dorsaux", "lower back": "lombaires", "erector spinae": "lombaires", forearms: "brachial"
+};
+const zoneName = (m) => (ZONES[VERS_ZONE[m]] || [0, "", m])[2].toLowerCase();
+const musclesOf = (e) => (e && (e.muscles || MUSCLES_DEFAUT[e.id])) || { p: [], s: [] };
+function musclesText(e) {
+  const m = musclesOf(e), n = (k) => (ZONES[k] ? ZONES[k][2] : k);
+  return [m.p.length ? `<b>Principaux :</b> ${m.p.map(n).join(", ")}` : "", m.s.length ? `<b>Secondaires :</b> ${m.s.map(n).join(", ")}` : ""].filter(Boolean).join(" · ");
+}
+/** Silhouettes de face et de dos, muscles principaux en rouge et secondaires en orange. */
+function bodyMap(e, size = "md") {
+  const m = musclesOf(e);
+  const side = (sd) => {
+    let lay = "";
+    m.s.forEach((k) => { const z = ZONES[k]; if (z && z[1] === sd) lay += `<img src="img/muscles/secondary/muscle-${z[0]}.svg" alt="">`; });
+    m.p.forEach((k) => { const z = ZONES[k]; if (z && z[1] === sd) lay += `<img src="img/muscles/main/muscle-${z[0]}.svg" alt="">`; });
+    return `<span class="body"><img src="img/muscles/${sd === "f" ? "front" : "back"}.webp" alt="">${lay}</span>`;
+  };
+  const label = [...m.p, ...m.s].map((k) => (ZONES[k] ? ZONES[k][2] : k)).join(", ");
+  return `<span class="bodymap ${size}" role="img" aria-label="Muscles travaillés : ${esc(label || "non renseignés")}">${side("f")}${side("b")}</span>`;
+}
+const imgId = (e) => { if (!e || e.image === "_aucune") return ""; return e.image || IMG_DEFAUT[e.id] || "_carte"; };
+const isDessin = (id) => id.startsWith("ek");
+function imgUrl(id, f) {
+  if (id.startsWith("ek:")) { const n = id.slice(3); return DESSINS_LOCAUX.has(n) ? `img/dessins/${n}-${f}.svg` : `https://raw.githubusercontent.com/everkinetic/data/main/dist/svg/${n}-${f ? "tension" : "relaxation"}.svg`; }
+  if (id.startsWith("ekpng:")) return `img/dessins/${id.slice(6)}-${f}.png`;
+  return PHOTOS_LOCALES.has(id) ? `img/exos/${id}-${f}.jpg` : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${encodeURIComponent(id)}/${f}.jpg`;
+}
+/** Vignette : dessin ou photo animés (début et fin du mouvement), ou carte des muscles. */
 function thumb(e, size = "sm", clickable = true) {
   const id = imgId(e);
-  const inner = id ? `<img src="${imgUrl(id, 0)}" alt="" loading="lazy" decoding="async"><img class="f2" src="${imgUrl(id, 1)}" alt="" loading="lazy" decoding="async">` : `<span class="ph">${esc((e.nom || "?").slice(0, 2))}</span>`;
-  return clickable && id ? `<button type="button" class="thumb ${size}" data-act="img-show" data-exo="${esc(e.id)}" aria-label="Voir l'exécution : ${esc(e.nom)}">${inner}</button>` : `<span class="thumb ${size}" aria-hidden="true">${inner}</span>`;
+  let inner, cls = "";
+  if (id === "_carte") { inner = bodyMap(e, "fill"); cls = " carte"; }
+  else if (id) { inner = `<img src="${imgUrl(id, 0)}" alt="" loading="lazy" decoding="async"><img class="f2" src="${imgUrl(id, 1)}" alt="" loading="lazy" decoding="async">`; cls = isDessin(id) ? " dessin" : ""; }
+  else inner = `<span class="ph">${esc((e.nom || "?").slice(0, 2))}</span>`;
+  return clickable ? `<button type="button" class="thumb ${size}${cls}" data-act="img-show" data-exo="${esc(e.id)}" aria-label="Voir l'exécution et les muscles : ${esc(e.nom)}">${inner}</button>` : `<span class="thumb ${size}${cls}" aria-hidden="true">${inner}</span>`;
 }
 let CATALOGUE = null;
-async function catalogue() { if (!CATALOGUE) { try { CATALOGUE = await (await fetch("catalogue.json")).json(); } catch (e) { CATALOGUE = []; } } return CATALOGUE; }
-async function showExoImage(e) {
-  const cat = await catalogue(), c = cat.find((x) => x.id === imgId(e));
-  const muscles = c && c.m.length ? `<p class="muted small">Muscles principaux : ${c.m.map((m) => MUSCLES[m] || m).join(", ")}</p>` : "";
-  modal(e.nom, `${thumb(e, "lg", false)}${muscles}<p class="muted small">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}${e.unite ? " · " + esc(e.unite) : ""}</p>`, [{ label: "Fermer", value: null }]);
+async function catalogue() {
+  if (!CATALOGUE) {
+    const get = async (f, type) => { try { return (await (await fetch(f)).json()).map((c) => ({ ...c, type })); } catch (e) { return []; } };
+    CATALOGUE = [...(await get("catalogue-dessins.json", "Dessin")), ...(await get("catalogue.json", "Photo"))];
+  }
+  return CATALOGUE;
+}
+function showExoImage(e) {
+  const id = imgId(e);
+  modal(e.nom, `${id && id !== "_carte" ? thumb(e, "lg", false) : ""}<div class="map-modal">${bodyMap(e, "lg")}<p class="small">${musclesText(e) || "Muscles non renseignés (à régler dans Progrès)."}</p></div>
+    <p class="muted small">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}${e.unite ? " · " + esc(e.unite) : ""}</p>`, [{ label: "Fermer", value: null }]);
 }
 async function pickImage(e) {
   const cat = await catalogue();
-  const list = (q) => { const t = q.trim().toLowerCase(); return cat.filter((c) => !t || c.n.toLowerCase().includes(t) || c.m.some((m) => (MUSCLES[m] || m).includes(t))).slice(0, 40); };
-  const row = (c) => `<button type="button" class="item" data-img="${esc(c.id)}">${thumb({ id: "_", nom: c.n, image: c.id }, "sm", false)}<span class="grow" style="text-align:left">${esc(c.n)}<span class="muted small" style="display:block">${esc(c.m.map((m) => MUSCLES[m] || m).join(", "))}</span></span></button>`;
-  const p = modal("Choisir une illustration", `<label class="field" for="img-q"><span>Rechercher (nom anglais ou muscle)</span><input id="img-q" value="${esc((cat.find((c) => c.id === imgId(e)) || { n: "" }).n)}" autocomplete="off" placeholder="squat, curl, chest…"></label><div class="list" id="img-res" style="margin-top:10px"></div>`, [{ label: "Sans image", cls: "secondary", value: "" }, { label: "Annuler", cls: "secondary", value: null }]);
+  const list = (q) => { const t = q.trim().toLowerCase(); return cat.filter((c) => !t || c.n.toLowerCase().includes(t) || c.m.some((m) => zoneName(m).includes(t) || m.includes(t))).slice(0, 50); };
+  const row = (c) => `<button type="button" class="item" data-img="${esc(c.id)}">${thumb({ id: "_", nom: c.n, image: c.id }, "sm", false)}<span class="grow" style="text-align:left">${esc(c.n)}<span class="muted small" style="display:block">${c.type} · ${esc(c.m.map(zoneName).join(", "))}</span></span></button>`;
+  const cur = cat.find((c) => c.id === imgId(e));
+  const p = modal("Choisir une illustration", `<label class="field" for="img-q"><span>Rechercher (nom anglais ou muscle)</span><input id="img-q" value="${esc(cur ? cur.n : "")}" autocomplete="off" placeholder="squat, curl, pectoraux…"></label><div class="list" id="img-res" style="margin-top:10px"></div>`,
+    [{ label: "Carte des muscles", cls: "secondary", value: "_carte" }, { label: "Sans image", cls: "secondary", value: "_aucune" }, { label: "Annuler", cls: "secondary", value: null }]);
   const root = $("#modal-root"), res = $("#img-res", root), q = $("#img-q", root);
   const draw = () => { res.innerHTML = list(q.value).map(row).join("") || '<p class="muted">Aucun résultat.</p>'; };
   q.addEventListener("input", draw); draw();
@@ -441,7 +497,7 @@ function viewApercu(id) {
     const e = exo(it.exo), s = suggest(it.exo, it.series);
     h += `<section class="ex"><div class="ex-head">${thumb(e, "md")}<div class="grow"><div class="row" style="gap:8px">${it.bloc ? `<span class="bloc">${esc(it.bloc)}</span>` : ""}<h3>${esc(e.nom)}</h3></div>
       <div class="ex-meta">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}</div></div></div>
-      ${goalHtml(s, e)}
+      <div class="goal-row">${goalHtml(s, e)}${bodyMap(e, "md")}</div>
       <ol class="plan">${Array.from({ length: s.n }, (_, i) => `<li><span class="plan-n">${i + 1}</span><span class="plan-r">${s.reps} reps</span><span class="plan-k">${esc(kgLabel(s.kg, e))}</span></li>`).join("")}</ol>
       <p class="muted small">${esc(s.consigne)}</p></section>`;
   });
@@ -467,7 +523,7 @@ function viewSeance() {
       <div class="ex-meta">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}${e.unite ? " · " + esc(e.unite) : ""}</div></div>
       <button type="button" class="mini" data-act="x-menu" data-x="${xi}" aria-label="Options de l'exercice">•••</button></div>`;
     if (x.saute) { h += `<button type="button" class="btn secondary" data-act="x-skip" data-x="${xi}">Reprendre cet exercice</button></section>`; return; }
-    h += `<div class="hint-row">${goalHtml(s, e)}<p class="muted small">${esc(s.consigne)}</p></div>
+    h += `<div class="hint-row"><div class="goal-row">${goalHtml(s, e)}${bodyMap(e, "md")}</div><p class="muted small">${esc(s.consigne)}</p></div>
       <table class="sets"><thead><tr><th scope="col">Série</th><th scope="col">Précédent</th><th scope="col">${e.mode === "corps" ? "± kg" : "kg"}</th><th scope="col">Reps</th><th scope="col"><span class="sr">Fait</span>✓</th></tr></thead><tbody>`;
     let wn = 0;
     x.series.forEach((z, si) => {
@@ -561,7 +617,8 @@ function viewExercice(id) {
   if (!e) { header("Exercice introuvable"); return `<p><a href="#exercices">Retour</a></p>`; }
   header(e.nom, esc(e.unite || ""));
   const hist = historyOf(id), b = bestOf(id);
-  let h = `${imgId(e) ? thumb(e, "lg", false) : ""}<div class="records">
+  const id0 = imgId(e);
+  let h = `${id0 && id0 !== "_carte" ? thumb(e, "lg", false) : ""}<div class="card"><div class="map-modal">${bodyMap(e, "lg")}<p class="small">${musclesText(e) || "Muscles non renseignés : choisis-les dans les réglages ci-dessous."}</p></div></div><div class="records">
     <div class="stat"><b>${b.e1rm ? fmt(b.e1rm, 1) : "—"}</b><span>1RM estimé (kg)${b.e1rmSet ? ` · ${esc(kgLabel(b.e1rmSet.kg, e))} × ${b.e1rmSet.reps}` : ""}</span></div>
     <div class="stat"><b>${b.maxKgSet ? esc(kgLabel(b.maxKg, e)) : "—"}</b><span>charge max${b.maxKgSet ? ` · × ${b.maxKgSet.reps} le ${dateShort(b.maxKgSet.date)}` : ""}</span></div>
     <div class="stat"><b>${b.maxReps || "—"}</b><span>reps max sur une série</span></div>
@@ -578,6 +635,7 @@ function viewExercice(id) {
       <label class="field" for="e-repos"><span>Repos (s)</span><input id="e-repos" inputmode="numeric" value="${e.repos}"></label>
       <label class="field wide" for="e-unite"><span>Précision</span><input id="e-unite" value="${esc(e.unite || "")}" placeholder="Par haltère, reps par jambe…"></label>
       <div class="field wide"><span>Illustration</span><div class="row">${thumb(e, "sm", false)}<button type="button" class="btn secondary" data-act="pick-img" data-id="${esc(e.id)}">Choisir dans la bibliothèque</button></div></div>
+      <div class="field wide"><span>Muscles travaillés (toucher : principal → secondaire → aucun)</span><div class="chips">${Object.entries(ZONES).map(([k, z]) => { const m = musclesOf(e), st = m.p.includes(k) ? "p" : m.s.includes(k) ? "s" : ""; return `<button type="button" class="chip ${st}" data-act="mz" data-id="${esc(e.id)}" data-k="${k}" aria-pressed="${!!st}">${esc(z[2])}${st === "p" ? " · principal" : st === "s" ? " · secondaire" : ""}</button>`; }).join("")}</div></div>
     </div><button type="button" class="btn" data-act="save-exo" data-id="${esc(e.id)}">Enregistrer</button></div>`;
   return h;
 }
@@ -656,6 +714,7 @@ function viewReglages() {
     <div class="row wrap"><button type="button" class="btn secondary" data-act="nat-perm">Autoriser les notifications</button><button type="button" class="btn secondary" data-act="nat-exact">Autoriser les alarmes exactes</button><button type="button" class="btn secondary" data-act="nat-test">Tester (5 s)</button></div></div>` : ""}
     <div class="card"><h3>Données</h3>
     <div class="row wrap"><button type="button" class="btn secondary" data-act="export">Exporter (JSON)</button><button type="button" class="btn secondary" data-act="export-csv">Exporter (CSV)</button><label class="btn secondary" for="imp">Importer un JSON</label><input id="imp" type="file" accept="application/json,.json" hidden></div>
+    <p class="muted small">Illustrations : dessins <a href="https://github.com/everkinetic/data">Everkinetic</a> (CC BY-SA 4.0), photos <a href="https://github.com/yuhonas/free-exercise-db">Free Exercise DB</a> (domaine public), cartes musculaires du projet <a href="https://github.com/wger-project/wger">wger</a> d'après Wikimedia Commons.</p>
     <p class="muted small">${NATIVE ? "Dans l'appli Android, les exports se font plutôt depuis la version web, sur ordinateur." : "Appli Android : à télécharger dans les Releases du dépôt. Sinon, menu ⋮ de Chrome → « Ajouter à l'écran d'accueil » ; pendant une séance l'écran reste allumé pour que le bip sonne."} Version ${APP_VERSION}${NATIVE ? " (Android)" : ""}.</p></div>`;
 }
 
@@ -757,10 +816,17 @@ document.addEventListener("click", async (ev) => {
       saveDB(); markProg(); toast("Exercice enregistré."); return render();
     }
     case "img-show": return showExoImage(exo(b.dataset.exo));
+    case "mz": {
+      const e = DB.exercices.find((q) => q.id === b.dataset.id), k = b.dataset.k, m = JSON.parse(JSON.stringify(musclesOf(e)));
+      if (m.p.includes(k)) { m.p = m.p.filter((x) => x !== k); m.s.push(k); } else if (m.s.includes(k)) m.s = m.s.filter((x) => x !== k); else m.p.push(k);
+      e.muscles = m; saveDB(); markProg(); const sc = window.scrollY; render(); window.scrollTo(0, sc); return;
+    }
     case "pick-img": {
       const e = DB.exercices.find((q) => q.id === b.dataset.id); const id = await pickImage(e);
       if (id === null || id === undefined) return;
-      e.image = id || "_aucune"; saveDB(); markProg(); return render();
+      e.image = id;
+      if (!e.muscles && !MUSCLES_DEFAUT[e.id]) { const c = (await catalogue()).find((x) => x.id === id); if (c) { const zs = [...new Set(c.m.map((m) => VERS_ZONE[m]).filter(Boolean))]; e.muscles = { p: zs, s: [] }; } }
+      saveDB(); markProg(); return render();
     }
     case "nat-perm": NAT.ready = false; await nativeSetup(); toast("Notifications : vérifié."); return render();
     case "nat-exact": { const ln = nativeLN(); try { if (ln && ln.changeExactNotificationSetting) await ln.changeExactNotificationSetting(); } catch (e) {} NAT.ready = false; await nativeSetup(); return render(); }

@@ -47,3 +47,9 @@ Le jeton reste dans le stockage local du téléphone.
 - `index.html`, `style.css`, `app.js` : l'application (sans dépendance ni compilation) ;
 - `sw.js`, `manifest.webmanifest`, `icons/` : installation et fonctionnement hors ligne ;
 - `demarrage.json` : exercices et programme proposés au premier lancement, sans jeton.
+
+## Crédits des illustrations
+
+- Dessins d'exercices (`img/dessins/`, `catalogue-dessins.json`) : [Everkinetic](https://github.com/everkinetic/data), licence CC BY-SA 4.0.
+- Photos d'exercices (`img/exos/`, `catalogue.json`) : [Free Exercise DB](https://github.com/yuhonas/free-exercise-db), domaine public (Unlicense).
+- Cartes musculaires (`img/muscles/`) : projet [wger](https://github.com/wger-project/wger), d'après les planches « Muscular system » de Wikimedia Commons ; silhouettes converties en WebP.
