@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.2.0";
+const APP_VERSION = "1.3.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft" };
@@ -111,6 +111,39 @@ function suggest(exoId, defaultSets) {
   } else out = { kg, reps: Math.min(e.max, reps + (d <= 2 ? 2 : 1)), consigne: "Même charge, on ajoute des reps." };
   out.kg = Math.round(out.kg * 100) / 100;
   return { ...out, n, last };
+}
+
+// ============================================================ Illustrations (Free Exercise DB, domaine public)
+const IMG_DEFAUT = { tractions: "Pullups", "face-pull": "Face_Pull", pallof: "Pallof_Press", "split-squat": "Split_Squat_with_Dumbbells", "dev-militaire": "Standing_Dumbbell_Press", rdl: "Romanian_Deadlift", dips: "Dips_-_Triceps_Version", "curl-inverse": "Reverse_Barbell_Curl", "releves-jambes": "Hanging_Leg_Raise" };
+const IMG_LOCALES = new Set(Object.values(IMG_DEFAUT));
+const MUSCLES = { abdominals: "abdominaux", abductors: "abducteurs", adductors: "adducteurs", biceps: "biceps", calves: "mollets", chest: "pectoraux", forearms: "avant-bras", glutes: "fessiers", hamstrings: "ischio-jambiers", lats: "grands dorsaux", "lower back": "lombaires", "middle back": "milieu du dos", neck: "cou", quadriceps: "quadriceps", shoulders: "épaules", traps: "trapèzes", triceps: "triceps" };
+const imgId = (e) => { if (!e || e.image === "_aucune") return ""; return e.image || IMG_DEFAUT[e.id] || ""; };
+const imgUrl = (id, f) => IMG_LOCALES.has(id) ? `img/exos/${id}-${f}.jpg` : `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${encodeURIComponent(id)}/${f}.jpg`;
+/** Vignette animée : alterne position de départ et d'arrivée. */
+function thumb(e, size = "sm", clickable = true) {
+  const id = imgId(e);
+  const inner = id ? `<img src="${imgUrl(id, 0)}" alt="" loading="lazy" decoding="async"><img class="f2" src="${imgUrl(id, 1)}" alt="" loading="lazy" decoding="async">` : `<span class="ph">${esc((e.nom || "?").slice(0, 2))}</span>`;
+  return clickable && id ? `<button type="button" class="thumb ${size}" data-act="img-show" data-exo="${esc(e.id)}" aria-label="Voir l'exécution : ${esc(e.nom)}">${inner}</button>` : `<span class="thumb ${size}" aria-hidden="true">${inner}</span>`;
+}
+let CATALOGUE = null;
+async function catalogue() { if (!CATALOGUE) { try { CATALOGUE = await (await fetch("catalogue.json")).json(); } catch (e) { CATALOGUE = []; } } return CATALOGUE; }
+async function showExoImage(e) {
+  const cat = await catalogue(), c = cat.find((x) => x.id === imgId(e));
+  const muscles = c && c.m.length ? `<p class="muted small">Muscles principaux : ${c.m.map((m) => MUSCLES[m] || m).join(", ")}</p>` : "";
+  modal(e.nom, `${thumb(e, "lg", false)}${muscles}<p class="muted small">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}${e.unite ? " · " + esc(e.unite) : ""}</p>`, [{ label: "Fermer", value: null }]);
+}
+async function pickImage(e) {
+  const cat = await catalogue();
+  const list = (q) => { const t = q.trim().toLowerCase(); return cat.filter((c) => !t || c.n.toLowerCase().includes(t) || c.m.some((m) => (MUSCLES[m] || m).includes(t))).slice(0, 40); };
+  const row = (c) => `<button type="button" class="item" data-img="${esc(c.id)}">${thumb({ id: "_", nom: c.n, image: c.id }, "sm", false)}<span class="grow" style="text-align:left">${esc(c.n)}<span class="muted small" style="display:block">${esc(c.m.map((m) => MUSCLES[m] || m).join(", "))}</span></span></button>`;
+  const p = modal("Choisir une illustration", `<label class="field" for="img-q"><span>Rechercher (nom anglais ou muscle)</span><input id="img-q" value="${esc((cat.find((c) => c.id === imgId(e)) || { n: "" }).n)}" autocomplete="off" placeholder="squat, curl, chest…"></label><div class="list" id="img-res" style="margin-top:10px"></div>`, [{ label: "Sans image", cls: "secondary", value: "" }, { label: "Annuler", cls: "secondary", value: null }]);
+  const root = $("#modal-root"), res = $("#img-res", root), q = $("#img-q", root);
+  const draw = () => { res.innerHTML = list(q.value).map(row).join("") || '<p class="muted">Aucun résultat.</p>'; };
+  q.addEventListener("input", draw); draw();
+  return new Promise((resolve) => {
+    p.then(resolve);
+    res.addEventListener("click", (ev) => { const b = ev.target.closest("[data-img]"); if (b) { root.innerHTML = ""; resolve(b.dataset.img); } });
+  });
 }
 
 // ============================================================ GitHub
@@ -390,12 +423,34 @@ function viewAccueil() {
   h += `<h2>Programmes</h2>`;
   DB.programmes.forEach((p) => {
     const lastP = all.find((s) => s.programme === p.id);
-    h += `<div class="card"><div class="row"><div class="grow"><h3>${esc(p.nom)}</h3><div class="muted small">${p.items.length} exercices · ${lastP ? "dernière fois le " + dateLong(lastP.date) : "jamais fait"}</div></div></div>
-      <div class="muted small">${p.items.map((it) => esc(exo(it.exo).nom)).join(" · ")}</div>
-      <div class="row"><button type="button" class="btn grow" data-act="start" data-id="${esc(p.id)}" ${DRAFT ? "disabled" : ""}>Commencer</button><a class="btn secondary" href="#programme/${esc(p.id)}">Modifier</a></div></div>`;
+    h += `<div class="card"><a class="row link" href="#apercu/${esc(p.id)}"><div class="grow"><h3>${esc(p.nom)}</h3><div class="muted small">${p.items.length} exercices · ${lastP ? "dernière fois le " + dateLong(lastP.date) : "jamais fait"}</div></div><span class="muted" aria-hidden="true">›</span></a>
+      <a class="thumbs" href="#apercu/${esc(p.id)}" aria-label="Voir le détail du programme">${p.items.map((it) => thumb(exo(it.exo), "xs", false)).join("")}</a>
+      <div class="row"><button type="button" class="btn grow" data-act="start" data-id="${esc(p.id)}" ${DRAFT ? "disabled" : ""}>Commencer</button><a class="btn secondary" href="#apercu/${esc(p.id)}">Détail</a><a class="btn secondary" href="#programme/${esc(p.id)}">Modifier</a></div></div>`;
   });
   h += `<button type="button" class="btn secondary" data-act="new-prog">Nouveau programme</button>`;
   return h;
+}
+
+/** Détail d'un programme, façon Hevy : illustration puis séries, reps et charge proposées, l'une sous l'autre. */
+function viewApercu(id) {
+  const p = DB.programmes.find((x) => x.id === id);
+  if (!p) { header("Programme introuvable"); return `<p><a href="#accueil">Retour</a></p>`; }
+  header(p.nom, `${p.items.length} exercices · séance ${nextNum()}`);
+  let h = "";
+  p.items.forEach((it) => {
+    const e = exo(it.exo), s = suggest(it.exo, it.series);
+    h += `<section class="ex"><div class="ex-head">${thumb(e, "md")}<div class="grow"><div class="row" style="gap:8px">${it.bloc ? `<span class="bloc">${esc(it.bloc)}</span>` : ""}<h3>${esc(e.nom)}</h3></div>
+      <div class="ex-meta">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}</div></div></div>
+      ${goalHtml(s, e)}
+      <ol class="plan">${Array.from({ length: s.n }, (_, i) => `<li><span class="plan-n">${i + 1}</span><span class="plan-r">${s.reps} reps</span><span class="plan-k">${esc(kgLabel(s.kg, e))}</span></li>`).join("")}</ol>
+      <p class="muted small">${esc(s.consigne)}</p></section>`;
+  });
+  h += `<div class="row"><a class="btn secondary" href="#programme/${esc(p.id)}">Modifier</a><button type="button" class="btn grow" data-act="start" data-id="${esc(p.id)}" ${DRAFT ? "disabled" : ""}>${DRAFT ? "Une séance est déjà en cours" : "Commencer la séance"}</button></div>`;
+  return h;
+}
+/** Objectif de l'exercice : séries, reps et charge l'une sous l'autre. */
+function goalHtml(s, e) {
+  return `<dl class="goal"><div><dt>Séries</dt><dd>${s.n}</dd></div><div><dt>Reps</dt><dd>${s.reps}</dd></div><div><dt>Charge</dt><dd>${esc(kgLabel(s.kg, e))}</dd></div></dl>`;
 }
 
 function viewSeance() {
@@ -408,11 +463,11 @@ function viewSeance() {
     const e = exo(x.exo), s = suggest(x.exo, x.series.filter((z) => z.t !== "E").length), prev = prevSetsOf(x.exo);
     const complete = x.series.length && x.series.every((z) => z.ok) && x.difficulte;
     h += `<section class="ex${x.saute ? " skipped" : ""}${complete ? " complete" : ""}" aria-labelledby="x-${xi}">
-      <div class="ex-head"><span class="bloc">${esc(x.bloc || "–")}</span><div class="grow"><h3 id="x-${xi}">${esc(e.nom)}</h3>
+      <div class="ex-head">${thumb(e, "md")}<div class="grow"><div class="row" style="gap:8px">${x.bloc ? `<span class="bloc">${esc(x.bloc)}</span>` : ""}<h3 id="x-${xi}">${esc(e.nom)}</h3></div>
       <div class="ex-meta">${e.min}–${e.max} reps · repos ${restLabel(e.repos)}${e.unite ? " · " + esc(e.unite) : ""}</div></div>
       <button type="button" class="mini" data-act="x-menu" data-x="${xi}" aria-label="Options de l'exercice">•••</button></div>`;
     if (x.saute) { h += `<button type="button" class="btn secondary" data-act="x-skip" data-x="${xi}">Reprendre cet exercice</button></section>`; return; }
-    h += `<div class="hint">${s.last ? `<b>${s.n}×${s.reps} · ${esc(kgLabel(s.kg, e))}</b> — ${esc(s.consigne)}` : esc(s.consigne)}</div>
+    h += `<div class="hint-row">${goalHtml(s, e)}<p class="muted small">${esc(s.consigne)}</p></div>
       <table class="sets"><thead><tr><th scope="col">Série</th><th scope="col">Précédent</th><th scope="col">${e.mode === "corps" ? "± kg" : "kg"}</th><th scope="col">Reps</th><th scope="col"><span class="sr">Fait</span>✓</th></tr></thead><tbody>`;
     let wn = 0;
     x.series.forEach((z, si) => {
@@ -460,7 +515,7 @@ function viewSeanceDetail(id) {
     const before = bestOf(x.exo, others), now = bestOf(x.exo, [s]);
     const isPr = historyOf(x.exo, others).length && now.e1rm > before.e1rm + 0.01;
     let wn = 0;
-    h += `<div class="card"><div class="row"><span class="bloc">${esc(x.bloc || "–")}</span><a class="grow" href="#exercice/${esc(x.exo)}"><h3>${esc(e.nom)}</h3></a>${isPr ? '<span class="pr">Record</span>' : ""}${d ? `<span class="pill" style="background:${d.c}" title="Difficulté ${d.v}">${d.v}</span>` : ""}</div>
+    h += `<div class="card"><div class="row">${thumb(e, "sm")}<a class="grow" href="#exercice/${esc(x.exo)}"><h3>${esc(e.nom)}</h3></a>${isPr ? '<span class="pr">Record</span>' : ""}${d ? `<span class="pill" style="background:${d.c}" title="Difficulté ${d.v}">${d.v}</span>` : ""}</div>
       <div class="tbl-wrap"><table class="data"><tbody>${x.series.map((z) => `<tr><td>${z.t === "E" ? "Échauff." : "Série " + ++wn}</td><td class="n">${esc(kgLabel(z.kg, e))}</td><td class="n">× ${z.reps}</td><td class="n muted">1RM ≈ ${fmt(e1rm(z.kg, z.reps, e), 1)}</td></tr>`).join("")}</tbody></table></div>
       ${x.note ? `<div class="muted small">${esc(x.note)}</div>` : ""}</div>`;
   });
@@ -476,7 +531,7 @@ function viewExercices() {
     const hist = historyOf(e.id), b = bestOf(e.id);
     const last = hist.length ? hist[hist.length - 1] : null;
     const lastTop = last ? workSets(last.x).reduce((m, z) => (num(z.kg) > num(m.kg) ? z : m), workSets(last.x)[0]) : null;
-    h += `<a class="item" href="#exercice/${esc(e.id)}"><div class="grow"><b>${esc(e.nom)}</b><div class="muted small">${last ? `Dernière fois : ${esc(kgLabel(lastTop.kg, e))} × ${lastTop.reps} (${dateShort(last.s.date)})` : "Pas encore fait"}</div></div><div class="r">${b.e1rm ? `1RM ≈ ${fmt(b.e1rm, 0)} kg` : ""}<br>${hist.length} séance${hist.length > 1 ? "s" : ""}</div></a>`;
+    h += `<a class="item" href="#exercice/${esc(e.id)}">${thumb(e, "sm", false)}<div class="grow"><b>${esc(e.nom)}</b><div class="muted small">${last ? `Dernière fois : ${esc(kgLabel(lastTop.kg, e))} × ${lastTop.reps} (${dateShort(last.s.date)})` : "Pas encore fait"}</div></div><div class="r">${b.e1rm ? `1RM ≈ ${fmt(b.e1rm, 0)} kg` : ""}<br>${hist.length} séance${hist.length > 1 ? "s" : ""}</div></a>`;
   });
   h += `</div><button type="button" class="btn secondary" data-act="new-exo">Nouvel exercice</button>`;
   return h;
@@ -506,7 +561,7 @@ function viewExercice(id) {
   if (!e) { header("Exercice introuvable"); return `<p><a href="#exercices">Retour</a></p>`; }
   header(e.nom, esc(e.unite || ""));
   const hist = historyOf(id), b = bestOf(id);
-  let h = `<div class="records">
+  let h = `${imgId(e) ? thumb(e, "lg", false) : ""}<div class="records">
     <div class="stat"><b>${b.e1rm ? fmt(b.e1rm, 1) : "—"}</b><span>1RM estimé (kg)${b.e1rmSet ? ` · ${esc(kgLabel(b.e1rmSet.kg, e))} × ${b.e1rmSet.reps}` : ""}</span></div>
     <div class="stat"><b>${b.maxKgSet ? esc(kgLabel(b.maxKg, e)) : "—"}</b><span>charge max${b.maxKgSet ? ` · × ${b.maxKgSet.reps} le ${dateShort(b.maxKgSet.date)}` : ""}</span></div>
     <div class="stat"><b>${b.maxReps || "—"}</b><span>reps max sur une série</span></div>
@@ -522,6 +577,7 @@ function viewExercice(id) {
       <label class="field" for="e-incr"><span>Palier (kg)</span><input id="e-incr" inputmode="decimal" value="${fmt(e.incr)}"></label>
       <label class="field" for="e-repos"><span>Repos (s)</span><input id="e-repos" inputmode="numeric" value="${e.repos}"></label>
       <label class="field wide" for="e-unite"><span>Précision</span><input id="e-unite" value="${esc(e.unite || "")}" placeholder="Par haltère, reps par jambe…"></label>
+      <div class="field wide"><span>Illustration</span><div class="row">${thumb(e, "sm", false)}<button type="button" class="btn secondary" data-act="pick-img" data-id="${esc(e.id)}">Choisir dans la bibliothèque</button></div></div>
     </div><button type="button" class="btn" data-act="save-exo" data-id="${esc(e.id)}">Enregistrer</button></div>`;
   return h;
 }
@@ -611,18 +667,18 @@ function parseRoute() {
 }
 function render() {
   parseRoute();
-  const navKey = { seance: "accueil", programme: "accueil", exercice: "exercices" }[UI.route] || UI.route;
+  const navKey = { seance: "accueil", programme: "accueil", apercu: "accueil", exercice: "exercices" }[UI.route] || UI.route;
   document.querySelectorAll("#nav a").forEach((a) => a.toggleAttribute("aria-current", false));
   const cur = document.querySelector(`#nav a[data-nav="${navKey}"]`); if (cur) cur.setAttribute("aria-current", "page");
   if (UI.route !== "programme") UI.progEdit = null;
   const views = {
-    accueil: viewAccueil, seance: viewSeance, historique: () => (UI.param ? viewSeanceDetail(UI.param) : viewHistorique()),
+    accueil: viewAccueil, seance: viewSeance, apercu: () => viewApercu(UI.param), historique: () => (UI.param ? viewSeanceDetail(UI.param) : viewHistorique()),
     exercices: viewExercices, exercice: () => viewExercice(UI.param), programme: () => viewProgramme(UI.param), outils: viewOutils, reglages: viewReglages
   };
   const html = (views[UI.route] || viewAccueil)();
   $("#main").innerHTML = html;
 }
-window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+window.addEventListener("hashchange", () => { $("#modal-root").innerHTML = ""; render(); window.scrollTo(0, 0); });
 
 // ============================================================ Actions
 document.addEventListener("click", async (ev) => {
@@ -699,6 +755,12 @@ document.addEventListener("click", async (ev) => {
       e.nom = $("#e-nom").value.trim() || e.nom; e.mode = $("#e-mode").value; e.min = Math.max(1, Math.round(num($("#e-min").value))); e.max = Math.max(e.min, Math.round(num($("#e-max").value)));
       e.incr = Math.max(0, num($("#e-incr").value)); e.repos = Math.max(0, Math.round(num($("#e-repos").value))); e.unite = $("#e-unite").value.trim();
       saveDB(); markProg(); toast("Exercice enregistré."); return render();
+    }
+    case "img-show": return showExoImage(exo(b.dataset.exo));
+    case "pick-img": {
+      const e = DB.exercices.find((q) => q.id === b.dataset.id); const id = await pickImage(e);
+      if (id === null || id === undefined) return;
+      e.image = id || "_aucune"; saveDB(); markProg(); return render();
     }
     case "nat-perm": NAT.ready = false; await nativeSetup(); toast("Notifications : vérifié."); return render();
     case "nat-exact": { const ln = nativeLN(); try { if (ln && ln.changeExactNotificationSetting) await ln.changeExactNotificationSetting(); } catch (e) {} NAT.ready = false; await nativeSetup(); return render(); }
