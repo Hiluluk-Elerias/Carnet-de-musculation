@@ -167,6 +167,22 @@ table.data td.n { text-align: right; white-space: nowrap; }
 .plates { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .plate { border-radius: 6px; background: var(--ink); color: var(--surface); font-weight: 600; padding: 10px 8px; font-variant-numeric: tabular-nums; min-width: 44px; text-align: center; }
 
+/* Supersets, reps en réserve, volume */
+.superset { display: flex; flex-direction: column; gap: 10px; border-left: 4px solid var(--accent); padding-left: 10px; margin-left: 2px; }
+.ss-head { font-size: 13px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .4px; }
+.sets tr.rir-row td { padding: 0 2px 6px; text-align: left; }
+.sets tr.rir-row .muted { margin-right: 6px; }
+.rir { min-width: 34px; padding: 4px 6px; margin-right: 4px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); font-size: 13px; font-weight: 600; }
+.rir[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.check.go { border-color: var(--accent); color: var(--accent); }
+.diff button.auto { border-color: var(--d); border-width: 2px; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: var(--surface); padding: 10px 8px; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+table.vol td { vertical-align: middle; }
+.vbar { height: 5px; background: var(--surface-2); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.vbar i { display: block; height: 100%; background: #dc2626; }
+
 /* Timer */
 body.timing main { padding-bottom: 150px; }
 .timer { position: fixed; left: 0; right: 0; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); z-index: 30; background: var(--ink); color: var(--surface); padding: 12px 16px; box-shadow: 0 -6px 24px rgba(0,0,0,.25); }
@@ -178,6 +194,10 @@ body.timing main { padding-bottom: 150px; }
 .t-bar { grid-column: 1 / -1; height: 6px; background: color-mix(in srgb, var(--surface) 18%, transparent); border-radius: 3px; overflow: hidden; }
 .t-bar i { display: block; height: 100%; width: 100%; background: var(--timer); }
 .t-next { grid-column: 1 / -1; font-size: 15px; }
+.timer.seq .t-time { color: var(--timer); }
+.timer.seq.work { background: #166534; }
+.timer.seq.work .t-time { color: #fff; }
+.timer.seq.work .t-bar i { background: #fff; }
 
 /* Modal and toast */
 .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }

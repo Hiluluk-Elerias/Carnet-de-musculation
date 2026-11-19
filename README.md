@@ -8,6 +8,11 @@ Application web personnelle pour suivre ses séances de musculation, dans l'espr
 - records (1RM estimé, charge max, volume) et graphique de progression par exercice ;
 - programmes et exercices modifiables, séries d'échauffement ;
 - calculateur de disques et tableau de pourcentages du 1RM ;
+- reps en réserve par série, supersets regroupés, détection de stagnation et séance de décharge ;
+- exercices au temps (gainage) et en intervalles (poutre) avec chrono d'effort ;
+- volume hebdomadaire par muscle sur la carte du corps ;
+- poids de corps lu automatiquement dans le dépôt privé `Carnet-nutrition-data` (moyenne 7 jours) ;
+- dans l'appli Android, notification permanente de la séance avec un bouton « Série faite » ;
 - fonctionne hors ligne ; existe en version web et en appli Android (APK).
 
 Les données ne sont pas dans ce dépôt public : elles sont enregistrées dans le dépôt privé
