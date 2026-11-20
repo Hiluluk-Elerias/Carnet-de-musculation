@@ -682,6 +682,7 @@ function viewApercu(id) {
 function chargeTxt(kg, e) {
   const k = num(kg);
   if (isCorps(e)) return k === 0 ? "PdC" : k > 0 ? `PdC + ${fmt(k)} kg` : `PdC − ${fmt(-k)} kg`;
+  if (k === 0) return "à choisir";
   return /halt[eè]re/i.test(e.unite || "") ? `2 × ${fmt(k)} kg` : `${fmt(k)} kg`;
 }
 function seriesTxt(n, v, e) {
