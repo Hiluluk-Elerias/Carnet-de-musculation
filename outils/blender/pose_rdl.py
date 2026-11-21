@@ -99,9 +99,11 @@ try:
             if o.type == 'MESH' and not o.hide_render:
                 m = MATS[categorie(o, os_set)]
                 o.data.materials.clear(); o.data.materials.append(m)
-        if not bpy.data.objects.get("Soleil_dessin"):
+        l = bpy.data.objects.get("Soleil_dessin")
+        if l is None:
             l = bpy.data.objects.new("Soleil_dessin", bpy.data.lights.new("Soleil_dessin", 'SUN'))
             sc.collection.objects.link(l)
+        if True:
             l.rotation_euler = Vector((-0.55, 0.35, -0.75)).to_track_quat('-Z', 'Y').to_euler(); l.data.energy = 2.2
         w = sc.world; w.use_nodes = True
         bg = w.node_tree.nodes.get("Background")
