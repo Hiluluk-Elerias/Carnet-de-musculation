@@ -55,7 +55,9 @@ def halteres(arm, axe=(0, 1, 0)):
 
 def barre_fixe(arm, L=1.3):
     g = [prise(arm, "l"), prise(arm, "r")]; c = (g[0] + g[1]) / 2
-    cylindre("barre_fixe", c + Vector((L / 2, 0, 0)), c - Vector((L / 2, 0, 0)), 0.016, ACIER)
+    cylindre("barre_fixe", c + Vector((L / 2, 0, 0)), c - Vector((L / 2, 0, 0)), 0.018, ACIER)
+    # potence fixée au mur, derrière le corps (côté opposé à la caméra)
+    cylindre("potence", c - Vector((L / 2 - 0.03, 0, 0)), c - Vector((L / 2 - 0.03, -0.0, 0)) + Vector((0, 0.55, 0.12)), 0.022, GRIS)
     return c
 
 def cable(arm, sd, vers, col=ACIER, poulie=True):
@@ -237,6 +239,16 @@ def faire(eid, arm, musc, os_):
         for o in list(bpy.data.objects):
             if o.name.startswith("Acc_"): bpy.data.objects.remove(o, do_unlink=True)
         if X.get("acc"): X["acc"](arm, i)
+        # objets loin de tout os : on les signale et on les masque
+        dg = bpy.context.evaluated_depsgraph_get()
+        segs = [(b.head.copy(), b.tail.copy()) for b in arm.pose.bones if b.name != "base"]
+        for o in bpy.data.objects:
+            if o.type != 'MESH' or o.hide_render or o.name.startswith("Acc_"): continue
+            e = o.evaluated_get(dg)
+            c = sum((e.matrix_world @ Vector(v) for v in e.bound_box), Vector()) / 8
+            d = min(((c - (h + (t - h) * max(0, min(1, (c - h).dot(t - h) / max((t - h).length_squared, 1e-9))))).length) for h, t in segs)
+            if d > 0.25:
+                p(eid, i + 1, "errant masqué :", o.name, round(d, 2)); o.hide_render = True
         cads.append((i, a, ps, cadrer(eid, X["vue"])))
         ech = max(max(c[3][4], c[3][5]) for c in cads)
         rendre(f"{eid}-{i + 1}", cads[-1][3], max(cads[-1][3][4], cads[-1][3][5]))
