@@ -167,6 +167,7 @@ ul.notes { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
 .fiche ol, .fiche ul { padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
 .fiche ul.attn li::marker { color: #d7343c; }
 .fiche-muscles { font-size: 14px; }
+.fiche .credit { font-size: 11px; color: var(--muted, #888); text-align: right; margin-top: 2px; }
 .pastille { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
 .pastille.p { background: #d7343c; }
 .pastille.s { background: #f39375; }
