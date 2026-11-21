@@ -23,9 +23,9 @@ def accessoires_barre(arm):
         o = bpy.context.active_object; o.name = "Acc_" + nom; o.color = col
         o.hide_render = False; return o
     cyl("barre", 0.014, 1.9, 0, (0.25, 0.25, 0.27, 1))
-    for sx in (1, -1):
-        cyl(f"disque{sx}", 0.2, 0.05, sx * 0.62, (0.32, 0.33, 0.36, 1))
-        cyl(f"butee{sx}", 0.03, 0.04, sx * 0.575, (0.25, 0.25, 0.27, 1))
+    # disque côté opposé à la caméra seulement : il passe derrière le corps sans le masquer
+    cyl("disque", 0.2, 0.05, -0.62, (0.55, 0.56, 0.6, 1))
+    cyl("butee", 0.03, 0.04, -0.575, (0.25, 0.25, 0.27, 1))
     return c
 
 try:
@@ -54,7 +54,7 @@ try:
     cadre = (-0.75, 0.55, -0.03, 1.78)
     R["poser"](arm, {"bras": 0, "avant_bras": 0, "main": 0}); bpy.context.view_layer.update()
     accessoires_barre(arm); rendu("rdl-0-debout", cadre)
-    R["poser"](arm, {"bassin": 72, "cuisse": -24, "jambe": 8, "pied": 0, "bras": 0, "avant_bras": 0, "main": 0})
+    R["poser"](arm, {"bassin": 70, "cuisse": -40, "jambe": 3, "pied": 0, "bras": 13, "avant_bras": 13, "main": 13})
     bpy.context.view_layer.update()
     c = accessoires_barre(arm); p("barre", tuple(round(x, 3) for x in c)); rendu("rdl-1-bas", cadre)
     p("OK")
