@@ -116,8 +116,13 @@ def construire():
                       "semitendinosus", "semimembranosus")
             if cz > 0.92 and not any(k in n_ for k in HANCHE):
                 elig = [s for s in elig if s[0].split(".")[0] not in JAMBE]
-            if cz < 0.85 and abs(cx) < 0.2:
-                elig = [s for s in elig if s[0].split(".")[0] not in ("clavicule", "bras", "avant_bras", "main")]
+            BRAS = ("clavicule", "bras", "avant_bras", "main")
+            cen = w.mean(axis=0)
+            def dseg(a, b):
+                ab = b - a; t = np.clip((cen - a) @ ab / max(ab @ ab, 1e-9), 0, 1); return np.linalg.norm(cen - (a + t * ab))
+            dbras = min([dseg(a, b) for nom, a, b, sg in elig if nom.split(".")[0] in BRAS] or [9])
+            if cz < 0.95 and dbras > 0.06:
+                elig = [s for s in elig if s[0].split(".")[0] not in BRAS]
             if any(k in n_ for k in ("rectus abdominis", "oblique", "transversus abdominis", "pyramidalis", "quadratus lumborum",
                                      "erector", "iliocostalis", "longissimus", "spinalis", "multifid", "rotatores", "interspinal",
                                      "intertransvers", "serratus posterior", "intercostal", "subcostal", "diaphragm")):
