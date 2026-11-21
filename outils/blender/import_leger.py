@@ -70,11 +70,13 @@ try:
             pts.append(o.matrix_world @ Vector(c))
     def pct(i, q):
         v = sorted(pt[i] for pt in pts); return v[int(q * (len(v) - 1))]
-    mins = Vector([pct(i, 0.005) for i in range(3)]); maxs = Vector([pct(i, 0.995) for i in range(3)])
+    mins = Vector([pct(0, 0.01), pct(1, 0.01), min(pt[2] for pt in pts)])
+    maxs = Vector([pct(0, 0.99), pct(1, 0.99), max(pt[2] for pt in pts)])
+    sc.view_settings.view_transform = 'Standard'; sc.view_settings.look = 'None'
     if sc.world is None: sc.world = bpy.data.worlds.new("Fond")
     sc.world.color = (1, 1, 1)
     p("bbox", tuple(round(x, 3) for x in mins), tuple(round(x, 3) for x in maxs))
-    ctr = (mins + maxs) / 2; h = max(maxs - mins)
+    ctr = (mins + maxs) / 2; h = maxs.z - mins.z
     cam_d = bpy.data.cameras.new("CamPlanche"); cam_d.type = 'ORTHO'; cam_d.ortho_scale = h * 1.08; cam_d.clip_end = h * 10
     cam = bpy.data.objects.new("CamPlanche", cam_d); sc.collection.objects.link(cam); sc.camera = cam
     for nom, loc, rot in [("profil", (ctr.x + h * 3, ctr.y, ctr.z), (90, 0, 90)), ("face", (ctr.x, ctr.y - h * 3, ctr.z), (90, 0, 0)),
