@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.6.0";
+const APP_VERSION = "1.7.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft", poids: "cm.poids" };
@@ -613,15 +613,45 @@ async function finishSeance() {
   location.hash = "#historique/" + seance.id;
 }
 
+// ============================================================ Fiches d'exercice (planches dessinées + consignes)
+let FICHES = null;
+async function chargerFiches() {
+  if (FICHES) return FICHES;
+  try { FICHES = await (await fetch("fiches/fiches.json")).json(); } catch (e) { FICHES = {}; }
+  return FICHES;
+}
+const hasFiche = (id) => !!(FICHES && FICHES[id]);
+function ficheHtml(id) {
+  const f = FICHES && FICHES[id];
+  if (!f) return "";
+  const li = (a) => a.map((x) => `<li>${esc(x)}</li>`).join("");
+  return `<div class="fiche">
+    <figure class="planche"><img src="fiches/svg/${esc(id)}-planche.svg" alt="Muscles sollicités : ${esc(f.principaux.join(", "))}" loading="lazy"></figure>
+    <p class="fiche-muscles"><span class="pastille p" aria-hidden="true"></span><b>Principaux :</b> ${esc(f.principaux.join(", "))}<br><span class="pastille s" aria-hidden="true"></span><b>Secondaires :</b> ${esc(f.secondaires.join(", "))}</p>
+    <figure class="mouvement"><img src="fiches/svg/${esc(id)}-mouvement.svg" alt="Exécution : position de départ et d'arrivée" loading="lazy"></figure>
+    <h4>Position de départ</h4><p>${esc(f.depart)}</p>
+    <h4>Exécution</h4><ol>${li(f.mouvement)}</ol>
+    <h4>Points d'attention</h4><ul class="attn">${li(f.attention)}</ul>
+    <h4>Respiration</h4><p>${esc(f.respiration)}</p>
+  </div>`;
+}
+async function ouvrirFiche(id) {
+  await chargerFiches();
+  const e = exo(id);
+  if (!hasFiche(id)) { toast("Pas encore de fiche pour cet exercice."); return; }
+  modal(e.nom, ficheHtml(id), [{ label: "Fermer", value: null }], "large");
+}
+
 // ============================================================ Modales
-function modal(title, bodyHtml, actions) {
+function modal(title, bodyHtml, actions, cls = "") {
   return new Promise((resolve) => {
     const root = $("#modal-root");
-    root.innerHTML = `<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title"><h3 id="m-title">${esc(title)}</h3><div>${bodyHtml}</div><div class="acts">${actions.map((a, i) => `<button type="button" class="btn ${a.cls || ""}" data-m="${i}">${esc(a.label)}</button>`).join("")}</div></div></div>`;
+    root.innerHTML = `<div class="modal-bg"><div class="modal ${cls}" role="dialog" aria-modal="true" aria-labelledby="m-title"><h3 id="m-title">${esc(title)}</h3><div>${bodyHtml}</div><div class="acts">${actions.map((a, i) => `<button type="button" class="btn ${a.cls || ""}" data-m="${i}">${esc(a.label)}</button>`).join("")}</div></div></div>`;
     const close = (v) => { root.innerHTML = ""; resolve(v); };
     root.querySelectorAll("[data-m]").forEach((b) => b.addEventListener("click", () => close(actions[+b.dataset.m].value)));
     root.querySelector(".modal-bg").addEventListener("click", (ev) => { if (ev.target.classList.contains("modal-bg")) close(undefined); });
-    root.querySelector(".acts .btn:last-child").focus();
+    root.querySelector(".acts .btn:last-child").focus({ preventScroll: true });
+    root.querySelector(".modal").scrollTop = 0;
   });
 }
 function pickExercise(title, excludeIds = []) {
@@ -698,7 +728,7 @@ function progTable(p, dl, compact) {
       let ens = restLabel(e.repos);
       if (g.ss) ens += k < g.items.length - 1 ? `, puis ${g.items[k + 1].it.bloc}` : `, puis retour ${g.items[0].it.bloc}`;
       const sous = [isInter(e) ? `${num(e.travail) || 7} s / ${num(e.pause) || 3} s` : "", compact ? "" : `Repos ${ens}`].filter(Boolean).join(" · ");
-      rows += `<tr class="${k === 0 ? "grp" : ""}"><td class="b">${esc(it.bloc || "")}</td><td>${esc(e.nom)}${sous ? `<div class="muted small">${esc(sous)}</div>` : ""}</td><td class="n nw">${esc(seriesTxt(s.n, s.reps, e))}</td><td class="nw">${esc(chargeTxt(s.kg, e))}</td></tr>`;
+      rows += `<tr class="${k === 0 ? "grp" : ""}"><td class="b">${esc(it.bloc || "")}</td><td>${hasFiche(it.exo) ? `<button type="button" class="lien-fiche" data-act="fiche" data-exo="${esc(it.exo)}">${esc(e.nom)}</button>` : esc(e.nom)}${sous ? `<div class="muted small">${esc(sous)}</div>` : ""}</td><td class="n nw">${esc(seriesTxt(s.n, s.reps, e))}</td><td class="nw">${esc(chargeTxt(s.kg, e))}</td></tr>`;
     });
   });
   return `<div class="tbl-wrap"><table class="data prog${compact ? " compact" : ""}"><thead><tr><th>Bloc</th><th>Exercice</th><th class="n">Séries × reps</th><th>Charge</th></tr></thead><tbody>${rows}</tbody></table></div>`;
@@ -739,9 +769,9 @@ function exoCard(x, xi) {
   const complete = x.series.length && x.series.every((z) => z.ok) && diffOf(x);
   const chrono = isTemps(e) || isInter(e);
   let h = `<section class="ex${x.saute ? " skipped" : ""}${complete ? " complete" : ""}" aria-labelledby="x-${xi}">
-    <div class="ex-head"><div class="grow"><div class="row" style="gap:8px">${x.bloc ? `<span class="bloc">${esc(x.bloc)}</span>` : ""}<h3 id="x-${xi}">${esc(e.nom)}</h3></div>
+    <div class="ex-head"><div class="grow"><div class="row" style="gap:8px">${x.bloc ? `<span class="bloc">${esc(x.bloc)}</span>` : ""}<h3 id="x-${xi}">${hasFiche(x.exo) ? `<button type="button" class="lien-fiche" data-act="fiche" data-exo="${esc(x.exo)}">${esc(e.nom)}</button>` : esc(e.nom)}</h3></div>
     <div class="ex-meta">${fourchette(e)} · repos ${restLabel(e.repos)}${isInter(e) ? ` · ${num(e.travail) || 7} s / ${num(e.pause) || 3} s` : ""}${e.unite ? " · " + esc(e.unite) : ""}</div></div>
-    <button type="button" class="mini" data-act="x-menu" data-x="${xi}" aria-label="Options de l'exercice">•••</button></div>`;
+    ${hasFiche(x.exo) ? `<button type="button" class="mini" data-act="fiche" data-exo="${esc(x.exo)}">Fiche</button>` : ""}<button type="button" class="mini" data-act="x-menu" data-x="${xi}" aria-label="Options de l'exercice">•••</button></div>`;
   if (x.saute) return h + `<button type="button" class="btn secondary" data-act="x-skip" data-x="${xi}">Reprendre cet exercice</button></section>`;
   h += `<div class="hint-row"><div class="goal-row">${goalHtml(s, e)}</div><p class="muted small">${s.stagne && !DRAFT.decharge ? '<span class="pr">Stagnation</span> ' : ""}${esc(s.consigne)}</p></div>
     <table class="sets"><thead><tr><th scope="col">Série</th><th scope="col">Précédent</th><th scope="col">${isCorps(e) ? "± kg" : "kg"}</th><th scope="col">${isTemps(e) ? "Sec." : isInter(e) ? "Susp." : "Reps"}</th><th scope="col"><span class="sr">Fait</span>${chrono ? "▶" : "✓"}</th></tr></thead><tbody>`;
@@ -869,7 +899,7 @@ function viewExercice(id) {
   header(e.nom, esc(e.unite || ""));
   const hist = historyOf(id), b = bestOf(id);
   const id0 = imgId(e);
-  let h = `<p class="small">${musclesText(e) || "Muscles non renseignés : choisis-les dans les réglages ci-dessous (ils servent au volume par muscle)."}</p><div class="records">
+  let h = (hasFiche(e.id) ? ficheHtml(e.id) : "") + `<p class="small">${hasFiche(e.id) ? "" : musclesText(e) || "Muscles non renseignés : choisis-les dans les réglages ci-dessous (ils servent au volume par muscle)."}</p><div class="records">
     ${hasE1rm(e) ? `<div class="stat"><b>${b.e1rm ? fmt(b.e1rm, 1) : "—"}</b><span>1RM estimé (kg)${b.e1rmSet ? ` · ${esc(kgLabel(b.e1rmSet.kg, e))} × ${b.e1rmSet.reps}` : ""}</span></div>` : ""}
     <div class="stat"><b>${b.maxKgSet ? esc(kgLabel(b.maxKg, e)) : "—"}</b><span>charge max${b.maxKgSet ? ` · × ${esc(vLabel(vOf(b.maxKgSet, e), e))} le ${dateShort(b.maxKgSet.date)}` : ""}</span></div>
     <div class="stat"><b>${b.maxReps ? esc(vLabel(b.maxReps, e)) : "—"}</b><span>max sur une série</span></div>
@@ -1078,6 +1108,7 @@ document.addEventListener("click", async (ev) => {
       saveDB(); markProg(); toast("Exercice enregistré."); return render();
     }
     case "img-show": return showExoImage(exo(b.dataset.exo));
+    case "fiche": return ouvrirFiche(b.dataset.exo);
     case "mz": {
       const e = DB.exercices.find((q) => q.id === b.dataset.id), k = b.dataset.k, m = JSON.parse(JSON.stringify(musclesOf(e)));
       if (m.p.includes(k)) { m.p = m.p.filter((x) => x !== k); m.s.push(k); } else if (m.s.includes(k)) m.s = m.s.filter((x) => x !== k); else m.p.push(k);
@@ -1181,6 +1212,7 @@ async function boot() {
   }
   if (!CFG.token) ajouterExemples();
   render();
+  chargerFiches().then(() => { if (UI.route !== "seance" || !document.activeElement || document.activeElement === document.body) render(); });
   if (DRAFT) wakeLock(true);
   if (NATIVE) {
     nativeSetup();

@@ -8,6 +8,7 @@ Application web personnelle pour suivre ses séances de musculation, dans l'espr
 - records (1RM estimé, charge max, volume) et graphique de progression par exercice ;
 - programmes et exercices modifiables, séries d'échauffement ;
 - calculateur de disques et tableau de pourcentages du 1RM ;
+- fiches d'exercice : planche anatomique dessinée (muscles principaux en rouge, secondaires en orangé), départ et arrivée du mouvement, consignes et points d'attention ;
 - reps en réserve par série, supersets regroupés, détection de stagnation et séance de décharge ;
 - exercices au temps (gainage) et en intervalles (poutre) avec chrono d'effort ;
 - volume hebdomadaire par muscle sur la carte du corps ;
@@ -52,6 +53,14 @@ Le jeton reste dans le stockage local du téléphone.
 - `index.html`, `style.css`, `app.js` : l'application (sans dépendance ni compilation) ;
 - `sw.js`, `manifest.webmanifest`, `icons/` : installation et fonctionnement hors ligne ;
 - `demarrage.json` : exercices et programme proposés au premier lancement, sans jeton.
+
+## Fiches d'exercice
+
+Les dessins des fiches (`fiches/svg/`) sont originaux : ils sont générés par `outils/fiches/planches.py`
+(personnage articulé de profil, muscles tendus entre des points d'ancrage sur les os ; `moteur.py` pour le dessin,
+`vues.py` pour les vues de face, de dos et de la main). Les textes sont dans `fiches/fiches.json`.
+Pour ajouter un exercice : une fonction de pose dans `planches.py`, une entrée dans `fiches.json`, puis
+`python3 outils/fiches/planches.py <id>`.
 
 ## Crédits des illustrations
 
