@@ -64,6 +64,12 @@ def cable(arm, sd, vers, col=ACIER, poulie=True):
     if poulie:
         boite("poulie" + sd, vers, (0.06, 0.06, 0.06), GRIS)
 
+def disque_dos(arm):
+    b = arm.pose.bones["thorax"]; v = (b.tail - b.head).normalized()
+    n = Vector((0, -v.z, v.y)); n = n if n.z > 0 else -n
+    c = (b.head + b.tail) / 2 + n * 0.115
+    return cylindre("disque_dos", c, c + n * 0.03, 0.17, GRIS, 48)
+
 def caisse(arm):
     m = R["point_os"](arm, "pied.r", "mid"); haut = max(m.z - 0.035, 0.1)
     return boite("caisse", (0, m.y + 0.06, haut / 2), (0.5, 0.36, haut), BOIS)
@@ -173,18 +179,17 @@ EXOS = {
  "pompes-lestees": dict(vue=90, prim=["sternocostal head of pectoralis major", "clavicular head of pectoralis major", "abdominal part of pectoralis major", "triceps"],
              sec=["clavicular part of deltoid", "serratus anterior", "rectus abdominis"],
              poses=[P(egal=("base", (40, 89), ("main.l", "head"), ("pied.l", "tail")),
-                      a={"bras": (0, 0), "avant_bras": (0, 0), "main": {"dir": (0, -1, -0.1), "tw": 180}, "pied": 140}),
+                      a={"bras": (0, 0), "avant_bras": (0, 0), "main": {"dir": (0, -1, -0.1), "tw": 180}, "pied": 140}, flex=(5, 5, 5)),
                     P(egal=("base", (55, 89), ("main.l", "head"), ("pied.l", "tail")),
-                      a={"bras": (55, 0), "avant_bras": (-5, 0), "main": {"dir": (0, -1, -0.1), "tw": 180}, "pied": 140})],
-             acc=lambda arm, i: cylindre("disque_dos", R["point_os"](arm, "thorax", "mid") + Vector((0, 0, 0.11)),
-                                         R["point_os"](arm, "thorax", "mid") + Vector((0, 0, 0.135)), 0.17, GRIS, 48)),
+                      a={"bras": (55, 0), "avant_bras": (-5, 0), "main": {"dir": (0, -1, -0.1), "tw": 180}, "pied": 140}, flex=(5, 5, 5))],
+             acc=lambda arm, i: disque_dos(arm)),
  "gainage-planche": dict(vue=90, prim=["rectus abdominis", "transversus abdominis"], sec=["abdominal oblique", "gluteus maximus", "vastus", "rectus femoris", "clavicular part of deltoid"],
              poses=[P(egal=("base", (60, 89), ("avant_bras.l", "head"), ("pied.l", "tail")),
-                      a={"bras": (0, 0), "avant_bras": {"dir": (0, -1, 0)}, "main": {"dir": (0, -1, 0), "tw": 90}, "pied": 140})],
+                      a={"bras": (0, 0), "avant_bras": {"dir": (0, -1, 0)}, "main": {"dir": (0, -1, 0), "tw": 90}, "pied": 140}, flex=(15, 20, 10))],
              acc=None),
  "y-sol": dict(vue=90, prim=["ascending part of trapezius", "transverse part of trapezius"], sec=["scapular spinal part of deltoid", "infraspinatus", "rhomboid"],
-             poses=[P(a={"base": 90, "bras": {"dir": (0.5, -1, -0.12)}, "avant_bras": {"dir": (0.5, -1, -0.12)}, "main": {"dir": (0.5, -1, -0.12), "tw": 90}, "pied": 150}),
-                    P(a={"base": 90, "bras": {"dir": (0.5, -1, 0.16)}, "avant_bras": {"dir": (0.5, -1, 0.16)}, "main": {"dir": (0.5, -1, 0.16), "tw": 90}, "pied": 150})],
+             poses=[P(a={"base": 90, "bras": {"dir": (0.5, -1, -0.12)}, "avant_bras": {"dir": (0.5, -1, -0.12)}, "main": {"dir": (0.5, -1, -0.12), "tw": 90}, "pied": 150}, flex=(5, 10, 5)),
+                    P(a={"base": 90, "bras": {"dir": (0.5, -1, 0.16)}, "avant_bras": {"dir": (0.5, -1, 0.16)}, "main": {"dir": (0.5, -1, 0.16), "tw": 90}, "pied": 150}, flex=(5, 10, 5))],
              sol=True, acc=None),
  "pallof": dict(vue=40, prim=["external abdominal oblique", "internal abdominal oblique", "rectus abdominis", "transversus abdominis"],
              sec=["gluteus medius", "clavicular part of deltoid", "serratus anterior"],
