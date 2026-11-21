@@ -55,7 +55,7 @@ def halteres(arm, axe=(0, 1, 0)):
 
 def barre_fixe(arm, L=1.3):
     g = [prise(arm, "l"), prise(arm, "r")]; c = (g[0] + g[1]) / 2
-    cylindre("barre_fixe", c + Vector((L / 2, 0, 0)), c - Vector((L / 2, 0, 0)), 0.018, ACIER)
+    cylindre("barre_fixe", c + Vector((L / 2, 0, 0)), c - Vector((L / 2, 0, 0)), 0.022, ACIER)
     return c
 
 def cable(arm, sd, vers, col=ACIER, poulie=True):
@@ -67,7 +67,7 @@ def cable(arm, sd, vers, col=ACIER, poulie=True):
 def disque_dos(arm):
     b = arm.pose.bones["thorax"]; v = (b.tail - b.head).normalized()
     n = Vector((0, -v.z, v.y)); n = n if n.z > 0 else -n
-    c = (b.head + b.tail) / 2 + n * 0.115
+    c = b.head * 0.7 + b.tail * 0.3 + n * 0.075
     return cylindre("disque_dos", c, c + n * 0.03, 0.17, GRIS, 48)
 
 def caisse(arm):
@@ -179,9 +179,9 @@ EXOS = {
  "pompes-lestees": dict(vue=90, prim=["sternocostal head of pectoralis major", "clavicular head of pectoralis major", "abdominal part of pectoralis major", "triceps"],
              sec=["clavicular part of deltoid", "serratus anterior", "rectus abdominis"],
              poses=[P(egal=("base", (40, 89), ("main.l", "head"), ("pied.l", "tail")),
-                      a={"bras": (0, 0), "avant_bras": (0, 0), "main": {"dir": (0, -1, -0.1), "tw": 180}, "pied": 140}, flex=(5, 5, 5)),
+                      a={"bras": (0, 0), "avant_bras": (0, 0), "main": {"dir": (0, -1, 0.12), "tw": 180}, "pied": 140}, flex=(5, 5, 5)),
                     P(egal=("base", (55, 89), ("main.l", "head"), ("pied.l", "tail")),
-                      a={"bras": (55, 0), "avant_bras": (-5, 0), "main": {"dir": (0, -1, -0.1), "tw": 180}, "pied": 140}, flex=(5, 5, 5))],
+                      a={"bras": (55, 0), "avant_bras": (-5, 0), "main": {"dir": (0, -1, 0.12), "tw": 180}, "pied": 140}, flex=(5, 5, 5))],
              acc=lambda arm, i: disque_dos(arm)),
  "gainage-planche": dict(vue=90, prim=["rectus abdominis", "transversus abdominis"], sec=["abdominal oblique", "gluteus maximus", "vastus", "rectus femoris", "clavicular part of deltoid"],
              poses=[P(egal=("base", (60, 89), ("avant_bras.l", "head"), ("pied.l", "tail")),
