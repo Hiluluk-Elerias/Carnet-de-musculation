@@ -67,7 +67,7 @@ def cable(arm, sd, vers, col=ACIER, poulie=True):
 def disque_dos(arm):
     b = arm.pose.bones["thorax"]; v = (b.tail - b.head).normalized()
     n = Vector((0, -v.z, v.y)); n = n if n.z > 0 else -n
-    c = b.head * 0.7 + b.tail * 0.3 + n * 0.075
+    c = b.head * 0.7 + b.tail * 0.3 + n * 0.0
     return cylindre("disque_dos", c, c + n * 0.03, 0.17, GRIS, 48)
 
 def caisse(arm):
