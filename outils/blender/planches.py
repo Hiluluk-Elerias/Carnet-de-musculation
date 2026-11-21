@@ -216,8 +216,7 @@ def rendre(nom, cad, ech):
     cam = sc.camera; cam.data.ortho_scale = max(W, H)
     ctr = right * ((u0 + u1) / 2) + Vector((0, 0, (z0 + z1) / 2))
     cam.location = ctr - fwd * 3
-    cam.rotation_euler = (math.radians(90), 0, math.atan2(-fwd.x, fwd.y) if False else math.radians(0));
-    cam.rotation_mode = 'QUATERNION'; cam.rotation_quaternion = fwd.to_track_quat('-Z', 'Z')
+    cam.rotation_mode = 'XYZ'; cam.rotation_euler = (math.radians(90), 0, math.atan2(-fwd.x, fwd.y))
     sc.render.filepath = str(SORTIE / f"{nom}.png")
     bpy.ops.render.render(write_still=True)
 
@@ -251,6 +250,8 @@ try:
     arm = bpy.data.objects.get("Squelette")
     if arm is None or "v2" not in arm.keys():
         arm = R["construire"](); arm["v2"] = 1
+    else:
+        R["articulations_doigts"]()  # recrée la liste des os des doigts dans ce module
     musc, os_ = R["collections_objets"]()
     musc_all = [o for o in musc]
     sc.render.engine = 'BLENDER_WORKBENCH'; sc.render.use_freestyle = False
