@@ -17,10 +17,13 @@ try:
     # scène propre
     for o in list(bpy.data.objects):
         bpy.data.objects.remove(o, do_unlink=True)
+    for c in list(bpy.data.collections):
+        bpy.data.collections.remove(c)
+    bpy.data.orphans_purge(do_recursive=True)
     sc = bpy.context.scene
     sc.render.use_freestyle = False
     with bpy.data.libraries.load(str(BLEND), link=False) as (src, dst):
-        cols = [c for c in src.collections if c.split(": ", 1)[-1] in ("Skeletal system", "Muscular system")]
+        cols = [c for c in src.collections if c in ("1: Skeletal system", "4: Muscular system")]
         p("collections importées :", cols)
         dst.collections = cols
     for c in dst.collections:
@@ -43,7 +46,6 @@ try:
     keep = set(o for ms in meshes.values() for o in ms)
     for o in bpy.data.objects:
         o.hide_render = o not in keep
-        o.hide_set(o not in keep)
     musc = [o for n, ms in meshes.items() if "Muscular" in n for o in ms]
     p("échantillon muscles :", sorted(o.name for o in musc)[:200])
     ecrire()
