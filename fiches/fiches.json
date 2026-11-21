@@ -53,7 +53,7 @@
   "dessin": "fiches/plat/rotation-externe.svg"
  },
  "pompes-lestees": {
-  "titre": "Pompes lestées",
+  "titre": "Pompes avec élastique",
   "principaux": [
    "Grand pectoral",
    "Triceps brachial"
@@ -63,7 +63,7 @@
    "Dentelé antérieur",
    "Abdominaux (gainage)"
   ],
-  "depart": "En appui sur les mains et la pointe des pieds, mains un peu plus larges que les épaules, doigts vers l'avant, corps gainé et aligné de la tête aux talons. Lest : un disque posé à plat entre les omoplates, ou un élastique passé dans le dos et tenu sous les mains.",
+  "depart": "En appui sur les mains et la pointe des pieds, mains un peu plus larges que les épaules, corps gainé de la tête aux talons. L'élastique passe en travers du haut du dos (sous les omoplates) et chaque bout est coincé sous une main.",
   "mouvement": [
    "Descends jusqu'à ce que la poitrine frôle le sol, coudes orientés à environ 45° du corps.",
    "Repousse le sol jusqu'à bras tendus, puis écarte encore un peu les omoplates en fin de mouvement (« pompe plus »)."
@@ -71,12 +71,12 @@
   "attention": [
    "Bassin aligné : ni fesses en l'air, ni creux dans le bas du dos. Serre fessiers et abdos.",
    "Coudes à 45°, pas en croix : moins de contraintes pour l'avant de l'épaule.",
-   "Tête dans l'alignement, regard vers le sol un peu devant les mains.",
-   "Disque bien centré entre les omoplates, ni sur la nuque, ni sur les lombaires.",
-   "Amplitude complète à chaque répétition."
+   "L'élastique reste bien à plat sur le haut du dos ; s'il glisse vers la nuque, recommence.",
+   "Amplitude complète : la résistance est maximale en haut, ne raccourcis pas la fin du mouvement.",
+   "Pour progresser : élastique plus fort, élastique doublé, ou pieds surélevés."
   ],
   "respiration": "Inspire en descendant, souffle en poussant.",
-  "apport": "C'est la poussée horizontale du programme, l'antagoniste direct de la traction. Elle équilibre pectoraux et triceps face aux dorsaux très sollicités en escalade. La « pompe plus » en fin de mouvement renforce le dentelé antérieur, qui stabilise l'omoplate. Le lest permet de progresser en force sans faire des séries interminables.",
+  "apport": "C'est la poussée horizontale du programme, l'antagoniste direct de la traction. Elle équilibre pectoraux et triceps face aux dorsaux très sollicités en escalade. La « pompe plus » en fin de mouvement renforce le dentelé antérieur, qui stabilise l'omoplate. L'élastique permet de progresser en force sans faire des séries interminables, et il charge surtout la fin de poussée.",
   "dessin": "fiches/plat/pompes-lestees.svg"
  },
  "y-sol": {
@@ -474,5 +474,56 @@
   "respiration": "Respire pendant la suspension, ne bloque pas.",
   "apport": "C'est l'entraînement spécifique de la force des doigts, le facteur qui limite le plus souvent la progression en bloc et en voie. Les suspensions répétées (7 s / 3 s) développent force et endurance de force sur les réglettes. Elles se font en semi-arqué, sans jamais aller à l'échec, pour protéger les poulies des doigts.",
   "dessin": "fiches/plat/poutre-repeaters.svg"
+ },
+ "tirage-bras-tendus": {
+  "titre": "Tirage bras tendus à la poulie haute",
+  "principaux": [
+   "Grand dorsal"
+  ],
+  "secondaires": [
+   "Triceps (longue portion)",
+   "Grand rond",
+   "Abdominaux (gainage)"
+  ],
+  "depart": "Debout face à la poulie haute, un grand pas en arrière, buste légèrement penché en avant, genoux déverrouillés. Barre droite ou corde tenue mains largeur d'épaules, bras tendus vers la poulie.",
+  "mouvement": [
+   "Bras tendus (coudes très légèrement fléchis et fixes), ramène la barre en arc de cercle jusqu'aux cuisses.",
+   "Serre 1 seconde en abaissant les épaules, puis remonte lentement jusqu'à sentir l'étirement sous l'aisselle."
+  ],
+  "attention": [
+   "Les coudes ne plient pas : c'est l'épaule qui bouge, pas le coude.",
+   "Épaules basses, loin des oreilles, pendant tout le mouvement.",
+   "Le buste reste fixe : pas de balancement ni d'élan du dos.",
+   "Côtes basses, abdos serrés : ne te cambre pas en fin de mouvement.",
+   "Charge modérée, 10 à 15 reps contrôlées."
+  ],
+  "respiration": "Souffle en ramenant la barre, inspire en remontant.",
+  "apport": "C'est le travail du grand dorsal bras tendus, le même que dans le front lever, mais facile à doser et à faire progresser. En escalade, il sert à garder les pieds au mur dans les dévers, à « tirer » une prise loin du corps bras tendu et à verrouiller l'épaule en compression. Il complète les tractions, où les bras plient.",
+  "dessin": "fiches/plat/tirage-bras-tendus.svg"
+ },
+ "extension-poignet": {
+  "titre": "Extension du poignet en excentrique",
+  "principaux": [
+   "Extenseurs radiaux du poignet",
+   "Extenseur des doigts"
+  ],
+  "secondaires": [
+   "Extenseur ulnaire du poignet"
+  ],
+  "depart": "Assis, avant-bras posé sur la cuisse ou un banc, paume vers le bas, le poignet dépasse dans le vide. Haltère léger en main.",
+  "mouvement": [
+   "Monte le poignet au maximum en t'aidant de l'autre main.",
+   "Lâche l'aide et redescends seul, le plus lentement possible (3 à 4 secondes), jusqu'en bas.",
+   "Recommence : 3 séries de 15 par bras."
+  ],
+  "attention": [
+   "La phase utile est la descente : c'est elle qui renforce le tendon.",
+   "Avant-bras bien posé, seul le poignet bouge.",
+   "Charge légère (1 à 3 kg au début) : une gêne légère est acceptable, pas une douleur vive.",
+   "Fais-le aussi du côté qui ne fait pas mal : c'est de la prévention."
+  ],
+  "respiration": "Respiration libre, sans bloquer.",
+  "apport": "C'est l'exercice de référence pour protéger le coude du grimpeur. Les extenseurs du poignet s'attachent à l'extérieur du coude (épicondyle), une zone très sollicitée quand on serre les prises. Le travail en descente lente renforce le tendon et équilibre les fléchisseurs, très forts chez le grimpeur. Il remplace les extensions des doigts à l'élastique.",
+  "dessin": "fiches/plat/extension-poignet.svg"
  }
 }

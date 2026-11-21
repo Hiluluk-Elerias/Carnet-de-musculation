@@ -2,7 +2,7 @@
 import os
 import sys
 from moteur import *
-from vues import ex_rotation_externe, ex_extensions_doigts
+from vues import ex_rotation_externe, ex_extensions_doigts, ex_extension_poignet
 
 SORTIE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'fiches', 'svg')
 
@@ -104,8 +104,10 @@ def ex_pompes():
         fr, S = frame_of(p, hl)
         floor(fr, g, S['foot_near']['at'][0] - 12, sx + 30)
         t = S['torso']
-        plate_pts = [t.pt(0.60, -11.6), t.pt(0.97, -11.6), t.pt(0.97, -14.6), t.pt(0.60, -14.6)]
-        shape(fr, Z['front'], plate_pts, '#8d96a3', EQUIP['line'], 0.7, k=0.3)
+        # élastique : en travers du haut du dos, chaque bout coincé sous une main
+        gr = grip_of(S, 'near')
+        dos = t.pt(0.80, -12.4)
+        band(fr, [gr, lerp(gr, dos, 0.5), dos], Z['front'])
         if ph == 0:
             c = t.pt(0.72, 14)
             arrow(fr, [add(c, (10, 4)), add(c, (10, -16))])
@@ -454,6 +456,40 @@ def ex_face_pull():
         ('delt_post', 'Deltoïde postérieur', 'p'), ('trap', 'Trapèze (moyen et inférieur)', 'p'), ('delt_mid', 'Deltoïde moyen', 's')])
 
 
+def ex_tirage_bras_tendus():
+    hl = {'lats': 'p', 'triceps': 's', 'abs': 's', 'delt_post': 's'}
+    pul = (82.0, 186.0)
+    frames = []
+    for ph in (0, 1):
+        p = standing()
+        p['torso'] = 10
+        p['head'] = 8
+        p['legs']['near'] = dict(th=196, sh=176, ft=90)
+        p['legs']['far'] = dict(th=200, sh=180, ft=92, off=(-1.4, 0))
+        S = build(p)
+        s = S['shoulder']
+        L = SEGLEN['ua'] + SEGLEN['fa'] - 0.6
+        if ph == 0:
+            dirv = unit(sub(pul, s))
+        else:
+            dirv = vdir(172)
+        for side, off in (('near', (0, 0)), ('far', (-1.4, 0.6))):
+            p['arms'][side] = dict(target=add(s, mul(dirv, L), off), bend='low', off=off, grip='fist')
+        fr, S = frame_of(p, hl)
+        g = fr.low(['foot_near', 'foot_far'])
+        floor(fr, g, -36, pul[0] + 12)
+        gr = grip_of(S, 'near')
+        cable(fr, gr, pul, Z['far_arm'] - 1)
+        pulley(fr, pul, Z['far_arm'] - 1, 4.5)
+        fr.add(1, f'<path d="M{P((pul[0] + 6, g))} L{P((pul[0] + 6, pul[1] + 12))}" stroke="{EQUIP["line"]}" stroke-width="2.6"/>', [(pul[0] + 6, pul[1] + 12)])
+        if ph == 0:
+            arrow(fr, [add(gr, (6, -6)), add(gr, (8, -34)), add(gr, (-6, -58))])
+        frames.append(fr)
+    return dict(frames=frames, planche=1, labels=[
+        ('lats', 'Grand dorsal', 'p'), ('triceps', 'Triceps (longue portion)', 's'), ('abs', 'Abdominaux', 's')],
+        captions=['1 · Bras vers la poulie', '2 · Mains aux cuisses'])
+
+
 def ex_releves():
     hl = {'abs': 'p', 'obliques': 's', 'quads': 's', 'flex_av': 's'}
     bar = (0.0, 210.0)
@@ -529,7 +565,7 @@ EXOS = {
     'split-squat': ex_split_squat, 'pallof': ex_pallof, 'rdl': ex_rdl, 'dips': ex_dips, 'leg-curl-nordique': ex_nordique,
     'rowing-inverse': ex_rowing_inverse, 'curl-inverse': ex_curl_inverse, 'tractions': ex_tractions, 'face-pull': ex_face_pull,
     'releves-jambes': ex_releves, 'gainage-planche': ex_gainage, 'poutre-repeaters': ex_poutre,
-    'rotation-externe': ex_rotation_externe, 'extensions-doigts': ex_extensions_doigts,
+    'rotation-externe': ex_rotation_externe, 'extensions-doigts': ex_extensions_doigts, 'extension-poignet': ex_extension_poignet, 'tirage-bras-tendus': ex_tirage_bras_tendus,
 }
 
 

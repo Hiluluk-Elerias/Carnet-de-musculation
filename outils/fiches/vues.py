@@ -225,3 +225,37 @@ def ex_extensions_doigts():
     labels = [('ext_dig', 'Extenseur commun des doigts', 'p', 'L'), ('ext_rad', 'Extenseurs radiaux du poignet', 's', 'L'),
               ('ext_uln', 'Extenseur ulnaire du poignet', 's', 'L')]
     return dict(frames=frames, planche=1, labels=labels, wide=True, captions=['1 · Doigts réunis', '2 · Main ouverte'])
+
+
+def ex_extension_poignet():
+    """Extension du poignet en excentrique : avant-bras posé, paume vers le bas, haltère léger."""
+    hl = {'ext_rad': 'p', 'ext_dig': 'p', 'ext_uln': 's'}
+    frames = []
+    for ph, ang in enumerate((38, -48)):
+        fr = Frame(hl)
+        # support (cuisse ou banc)
+        shape(fr, 5, [(-86, -8.4), (-3, -8.4), (-3, -24), (-86, -24)], EQUIP['fill'], EQUIP['line'], 0.8, k=0.2)
+        arm = [(-84, 8.6), (-55, 9.6), (-28, 8.0), (0, 5.6), (0, -5.4), (-28, -7.6), (-55, -8.6), (-84, -8.2)]
+        shape(fr, 30, arm, PAL['near']['skin'], PAL['near']['skin_line'], 0.8, tag='arm', k=0.6)
+        mspindle(fr, 31, (-78, 5.4), (-12, 4.2), 2.6, hl['ext_rad'], 0.35, key='ext_rad')
+        mspindle(fr, 31.5, (-76, 1.4), (-8, 1.2), 2.8, hl['ext_dig'], 0.35, key='ext_dig')
+        mspindle(fr, 31, (-74, -3.0), (-10, -2.6), 2.2, hl['ext_uln'], 0.35, key='ext_uln')
+        a = 90 - ang
+        d = vdir(a); n = ccw(d)
+        c = add((0.5, 0.0), mul(d, 11.0))
+        circle(fr, 36, add(c, mul(d, 3.0)), 13.0, EQUIP['fill'], EQUIP['line'], 0.8)
+        circle(fr, 36.5, add(c, mul(d, 3.0)), 3.2, EQUIP['dark'], EQUIP['line'], 0.5)
+        fist = ellipse_pts(c, 10.5, 7.2, a, 16)
+        shape(fr, 40, fist, PAL['near']['skin'], PAL['near']['skin_line'], 0.75, tag='hand', k=0.8)
+        line(fr, 41, [add(c, mul(d, 3.0), mul(n, 5.0)), add(c, mul(d, 4.5), mul(n, -2.0))], PAL['near']['skin_line'], 0.5)
+        tip = add(c, mul(d, 14))
+        if ph == 1:
+            arrow(fr, [add((0, 0), (16, 20)), add((0, 0), (26, 4)), add((0, 0), (22, -14))])
+            text(fr, 95, (30, 4), '3 à 4 s', 7.0, 'start', '#1f2a37', 600)
+        else:
+            arrow(fr, [add((0, 0), (24, -12)), add((0, 0), (28, 6)), add((0, 0), (16, 22))])
+            text(fr, 95, (32, 2), "avec l'autre main", 6.6, 'start', '#1f2a37', 500)
+        frames.append(fr)
+    labels = [('ext_rad', 'Extenseurs radiaux du poignet', 'p', 'L'), ('ext_dig', 'Extenseur des doigts', 'p', 'L'),
+              ('ext_uln', 'Extenseur ulnaire du poignet', 's', 'L')]
+    return dict(frames=frames, planche=1, labels=labels, wide=True, captions=['1 · Poignet relevé', '2 · Descente lente'])
