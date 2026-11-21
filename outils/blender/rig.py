@@ -21,7 +21,7 @@ J = {
 def S(n, x, y, z):  # articulations paires
     J[n + ".l"] = (x, y, z); J[n + ".r"] = (-x, y, z)
 S("cou_epaule", 0.02, 0.03, 1.41); S("epaule", 0.18, 0.03, 1.375); S("coude", 0.222, 0.02, 1.10)
-S("poignet", 0.255, 0.01, 0.865); S("main", 0.27, 0.0, 0.69)
+S("mi_avant_bras", 0.2385, 0.015, 0.9825); S("poignet", 0.255, 0.01, 0.865); S("main", 0.27, 0.0, 0.69)
 S("tete_femur", 0.085, 0.02, 0.865); S("genou", 0.082, 0.02, 0.45); S("cheville", 0.075, 0.035, 0.075)
 S("orteils", 0.09, -0.13, 0.02)
 
@@ -38,8 +38,9 @@ for sd, sg in (("l", 1), ("r", -1)):
     BONES += [
         (f"clavicule.{sd}", f"cou_epaule.{sd}", f"epaule.{sd}", "thorax", sg),
         (f"bras.{sd}", f"epaule.{sd}", f"coude.{sd}", f"clavicule.{sd}", sg),
-        (f"avant_bras.{sd}", f"coude.{sd}", f"poignet.{sd}", f"bras.{sd}", sg),
-        (f"main.{sd}", f"poignet.{sd}", f"main.{sd}", f"avant_bras.{sd}", sg),
+        (f"avant_bras.{sd}", f"coude.{sd}", f"mi_avant_bras.{sd}", f"bras.{sd}", sg),
+        (f"avant_bras2.{sd}", f"mi_avant_bras.{sd}", f"poignet.{sd}", f"avant_bras.{sd}", sg),
+        (f"main.{sd}", f"poignet.{sd}", f"main.{sd}", f"avant_bras2.{sd}", sg),
         (f"cuisse.{sd}", f"tete_femur.{sd}", f"genou.{sd}", "base", sg),
         (f"jambe.{sd}", f"genou.{sd}", f"cheville.{sd}", f"cuisse.{sd}", sg),
         (f"pied.{sd}", f"cheville.{sd}", f"orteils.{sd}", f"jambe.{sd}", sg),
@@ -152,7 +153,7 @@ def construire():
                       "semitendinosus", "semimembranosus")
             if cz > 0.92 and not any(k in n_ for k in HANCHE):
                 elig = [s for s in elig if s[0].split(".")[0] not in JAMBE]
-            BRAS = ("clavicule", "bras", "avant_bras", "main")
+            BRAS = ("clavicule", "bras", "avant_bras", "avant_bras2", "main")
             cen = w.mean(axis=0)
             def dseg(a, b):
                 ab = b - a; t = np.clip((cen - a) @ ab / max(ab @ ab, 1e-9), 0, 1); return np.linalg.norm(cen - (a + t * ab))
@@ -195,32 +196,67 @@ def construire():
     p("poids calculés pour", nv, "sommets en", round(time.time() - t0), "s")
     return arm
 
-def poser(arm, angles):
-    """angles : rotation dans le plan sagittal, en degrés, par rapport à la position anatomique, dans le repère du monde.
-    Positif = l'extrémité de l'os part vers l'avant pour un os orienté vers le haut (buste), vers l'arrière pour un os orienté vers le bas."""
+def _norm(spec):
+    if spec is None: return None
+    if isinstance(spec, dict): return dict(spec)
+    if isinstance(spec, (tuple, list)): return {"x": spec[0], "tw": spec[1]}
+    return {"x": spec}
+
+def _rotation(spec, sg, rest):
+    if "dir" in spec:
+        d = Vector(spec["dir"]); d.x *= sg
+        cur = rest @ Vector((0, 1, 0))
+        M = cur.rotation_difference(d.normalized()).to_matrix()
+    else:
+        M = (Matrix.Rotation(math.radians(spec.get("z", 0) * sg), 3, 'Z') @ Matrix.Rotation(math.radians(spec.get("y", 0) * sg), 3, 'Y')
+             @ Matrix.Rotation(math.radians(spec.get("x", 0)), 3, 'X'))
+    return M @ rest @ Matrix.Rotation(math.radians(spec.get("tw", 0) * sg), 3, 'Y')
+
+def point_os(arm, nom, ou="tail"):
+    b = arm.pose.bones[nom]
+    return (b.head if ou == "head" else b.tail if ou == "tail" else (b.head + b.tail) / 2).copy()
+
+def poser(arm, angles, ancre="pieds"):
+    """angles : orientation de chaque os dans le repère du monde, par rapport à la position anatomique.
+    Nombre = rotation sagittale (degrés ; + : un os orienté vers le haut bascule vers l'avant, un os orienté vers le bas part vers l'arrière).
+    (angle, torsion) ; ou dict avec x, y, z (rotations du monde, miroir pour le côté droit), dir (direction visée), tw (torsion autour de l'os).
+    Clé « os » : les deux côtés ; « os.l » / « os.r » : un seul côté. Un os non précisé suit son parent.
+    ancre : 'pieds' (chevilles à leur place), ('point', os, 'head'|'tail'|'mid', (x, y, z) avec None pour libre), ou None."""
     pb = arm.pose.bones
     for b in pb:
         b.matrix_basis = Matrix.Identity(4)
     bpy.context.view_layer.update()
+    A = {k: _norm(v) for k, v in angles.items()}
+    for sd in ("l", "r"):  # la pronation se répartit le long de l'avant-bras, la main suit le radius
+        ab = A.get(f"avant_bras.{sd}") or A.get("avant_bras")
+        mn = A.get(f"main.{sd}") or A.get("main")
+        if ab is None: continue
+        T = mn["tw"] if (mn is not None and "tw" in mn) else ab.get("tw", 0)
+        a1 = dict(ab); a1["tw"] = T * 0.35; A[f"avant_bras.{sd}"] = a1
+        if f"avant_bras2.{sd}" not in A and "avant_bras2" not in A:
+            a2 = dict(ab); a2["tw"] = T * 0.75; A[f"avant_bras2.{sd}"] = a2
     for nom, h, t, par, sg in BONES:
-        a = angles.get(nom, angles.get(nom.split(".")[0]))
-        if a is None:
+        spec = A.get(nom, A.get(nom.split(".")[0]))
+        if spec is None:
             continue
-        tw = 0
-        if isinstance(a, (tuple, list)):
-            a, tw = a
-            tw = tw * sg  # même sens anatomique des deux côtés
         bpy.context.view_layer.update()
         b = pb[nom]
         head = b.matrix.translation.copy()
         rest = arm.data.bones[nom].matrix_local.to_3x3()
-        b.matrix = Matrix.Translation(head) @ (Matrix.Rotation(math.radians(a), 3, 'X') @ rest @ Matrix.Rotation(math.radians(tw), 3, 'Y')).to_4x4()
+        b.matrix = Matrix.Translation(head) @ _rotation(spec, sg, rest).to_4x4()
     bpy.context.view_layer.update()
-    # les pieds restent au sol : on recale la base pour ramener les chevilles à leur place
-    ch = (pb["jambe.l"].tail + pb["jambe.r"].tail) / 2
-    rest_ch = Vector(((J["cheville.l"][0] + J["cheville.r"][0]) / 2, J["cheville.l"][1], J["cheville.l"][2]))
-    pb["base"].matrix = Matrix.Translation(rest_ch - ch) @ pb["base"].matrix
-    bpy.context.view_layer.update()
+    deplacer = None
+    if ancre == "pieds":
+        ch = (pb["jambe.l"].tail + pb["jambe.r"].tail) / 2
+        rest_ch = Vector(((J["cheville.l"][0] + J["cheville.r"][0]) / 2, J["cheville.l"][1], J["cheville.l"][2]))
+        deplacer = rest_ch - ch
+    elif isinstance(ancre, tuple) and ancre[0] == "point":
+        _, nom, ou, cible = ancre
+        cur = point_os(arm, nom, ou)
+        deplacer = Vector([(c - v) if c is not None else 0 for c, v in zip(cible, cur)])
+    if deplacer is not None:
+        pb["base"].matrix = Matrix.Translation(deplacer) @ pb["base"].matrix
+        bpy.context.view_layer.update()
 
 def fermer_mains(arm, flex=(55, 90, 60), pouce=(25, 35, 45), signe=1):
     """Fléchit les doigts (angles en degrés par articulation, de la base vers le bout), autour de l'axe de flexion au repos."""
