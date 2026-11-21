@@ -164,10 +164,12 @@ def construire():
             dbras = min([dseg(a, b) for nom, a, b, sg in elig if est_bras(nom)] or [9])
             if dbras > 0.06 and (cz < 1.1 or not any(k in n_ for k in ARM_TRONC)):
                 elig = [s for s in elig if not est_bras(s[0])]
-            if any(k in n_ for k in ("rectus abdominis", "oblique", "transversus abdominis", "pyramidalis", "quadratus lumborum",
+            if any(k in n_ for k in ("rectus abdominis", "abdominal oblique", "transversus abdominis", "pyramidalis", "quadratus lumborum",
                                      "erector", "iliocostalis", "longissimus", "spinalis", "multifid", "rotatores", "interspinal",
                                      "intertransvers", "serratus posterior", "intercostal", "subcostal", "diaphragm")):
                 elig = [s for s in elig if s[3] == 0]
+        TRONC_BRAS = ("latissimus", "pectoralis", "serratus anterior", "teres major", "trapezius", "rhomboid")
+        tronc_bras = o in musc and any(k in o.name.lower() for k in TRONC_BRAS)
         pts = w if o in musc else w.mean(axis=0, keepdims=True)
         D = []
         for nom, a, b, sg in elig:
@@ -177,6 +179,8 @@ def construire():
             d = np.linalg.norm(pts - (a + t[:, None] * ab), axis=1)
             # au-delà de la tête de l'os (côté parent), on laisse la place au parent
             d = d + 2.5 * np.maximum(0, -t_) * math.sqrt(L2)
+            if tronc_bras and (nom.split(".")[0] in ("bras", "avant_bras", "avant_bras2", "main") or nom.startswith("doigt")):
+                d = np.where(pts[:, 2] < 1.22, 9.0, d)  # seule la partie haute (vers l'aisselle) suit le bras
             if sg != 0:  # un membre ne capte pas les sommets de l'autre côté
                 d = np.where(pts[:, 0] * sg < -0.01, 9.0, d)
             D.append(d)

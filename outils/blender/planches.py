@@ -56,8 +56,6 @@ def halteres(arm, axe=(0, 1, 0)):
 def barre_fixe(arm, L=1.3):
     g = [prise(arm, "l"), prise(arm, "r")]; c = (g[0] + g[1]) / 2
     cylindre("barre_fixe", c + Vector((L / 2, 0, 0)), c - Vector((L / 2, 0, 0)), 0.018, ACIER)
-    # potence fixée au mur, derrière le corps (côté opposé à la caméra)
-    cylindre("potence", c - Vector((L / 2 - 0.03, 0, 0)), c - Vector((L / 2 - 0.03, -0.0, 0)) + Vector((0, 0.55, 0.12)), 0.022, GRIS)
     return c
 
 def cable(arm, sd, vers, col=ACIER, poulie=True):
@@ -65,6 +63,10 @@ def cable(arm, sd, vers, col=ACIER, poulie=True):
     cylindre("cable" + sd, c, vers, 0.004 if col == ACIER else 0.008, col)
     if poulie:
         boite("poulie" + sd, vers, (0.06, 0.06, 0.06), GRIS)
+
+def caisse(arm):
+    m = R["point_os"](arm, "pied.r", "mid"); haut = max(m.z - 0.035, 0.1)
+    return boite("caisse", (0, m.y + 0.06, haut / 2), (0.5, 0.36, haut), BOIS)
 
 # ---------------------------------------------------------------- couleurs
 def colorer(musc, os_, prim, sec, cacher=()):
@@ -124,7 +126,7 @@ EXOS = {
                     P(a={"bassin": 12, "cuisse.l": -82, "jambe.l": 14, "cuisse.r": 8, "jambe.r": 95, "pied.r": 150, "bras": (0, 0), "main": (0, 90)},
                       ancre=("point", "jambe.l", "tail", (None, None, 0.075)))],
              acc=lambda arm, i: (halteres(arm, (0, 1, 0)),
-                                 boite("caisse", R["point_os"](arm, "pied.r", "mid") - Vector((0, -0.02, 0.24)), (0.42, 0.34, 0.42), BOIS))),
+                                 caisse(arm))),
  "tractions": dict(vue=90, prim=["latissimus", "biceps brachii"],
              sec=["brachialis muscle", "brachioradialis", "trapezius", "scapular spinal part of deltoid", "teres major"],
              poses=[P(a={"bras": (-178, 0), "avant_bras": (-178, 0), "main": (-178, 180), "cuisse": -8, "jambe": 25}, ancre=("point", "main.l", "mid", (None, 0, 2.25))),
@@ -260,11 +262,15 @@ try:
         if o.type == 'MESH' and o.name.rsplit(".", 1)[-1] in ("g", "j", "t", "i", "s"):
             o.hide_render = True
     arm = bpy.data.objects.get("Squelette")
-    if arm is None or "v3" not in arm.keys():
-        arm = R["construire"](); arm["v3"] = 1
+    if arm is None or "v4" not in arm.keys():
+        arm = R["construire"](); arm["v4"] = 1
     else:
         R["articulations_doigts"]()  # recrée la liste des os des doigts dans ce module
     musc, os_ = R["collections_objets"]()
+    for o in bpy.data.objects:  # pièces sans squelette (elles resteraient en place) : masquées
+        if o.type == 'MESH' and not o.hide_render and not o.name.startswith("Acc_") and not any(m.type == 'ARMATURE' for m in o.modifiers):
+            o.hide_render = True; p("sans squelette, masqué :", o.name)
+    musc = [o for o in musc if not o.hide_render]; os_ = [o for o in os_ if not o.hide_render]
     musc_all = [o for o in musc]
     sc.render.engine = 'BLENDER_WORKBENCH'; sc.render.use_freestyle = False
     sh = sc.display.shading
