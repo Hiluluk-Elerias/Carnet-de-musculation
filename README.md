@@ -56,6 +56,10 @@ Le jeton reste dans le stockage local du téléphone.
 
 ## Fiches d'exercice
 
+Les rendus anatomiques (`fiches/rendu/*.webp`) sont produits dans Blender à partir de l'atlas libre Z-Anatomy
+(CC BY-SA 4.0, https://www.z-anatomy.com, d'après BodyParts3D) : scripts dans `outils/blender/`
+(`import_leger.py`, `rig.py`, `planches.py`, puis `composer.py`). Ces images sont donc sous licence CC BY-SA 4.0.
+
 Les dessins des fiches (`fiches/svg/`) sont originaux : ils sont générés par `outils/fiches/planches.py`
 (personnage articulé de profil, muscles tendus entre des points d'ancrage sur les os ; `moteur.py` pour le dessin,
 `vues.py` pour les vues de face, de dos et de la main). Les textes sont dans `fiches/fiches.json`.

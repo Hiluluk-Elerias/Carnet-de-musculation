@@ -23,7 +23,8 @@
    "Tête neutre : en haut, elle passe légèrement devant, entre les bras."
   ],
   "respiration": "Inspire en bas en te gainant, souffle en fin de poussée.",
-  "apport": "C'est l'exercice de poussée verticale de la séance A. L'escalade fait surtout tirer vers le bas : pousser au-dessus de la tête rééquilibre l'épaule et entretient la mobilité en élévation. Tu en as besoin sur les rétablissements et les mouvements en poussée (mantle). Mouvement polyarticulaire chargé, il compte aussi pour la recomposition : beaucoup de muscle sollicité, progression facile à suivre."
+  "apport": "C'est l'exercice de poussée verticale de la séance A. L'escalade fait surtout tirer vers le bas : pousser au-dessus de la tête rééquilibre l'épaule et entretient la mobilité en élévation. Tu en as besoin sur les rétablissements et les mouvements en poussée (mantle). Mouvement polyarticulaire chargé, il compte aussi pour la recomposition : beaucoup de muscle sollicité, progression facile à suivre.",
+  "rendu": "fiches/rendu/dev-militaire.webp"
  },
  "rotation-externe": {
   "titre": "Rotation externe à la poulie",
@@ -48,7 +49,8 @@
    "Amplitude sans douleur ; une gêne à l'avant de l'épaule, c'est le signal de réduire l'amplitude."
   ],
   "respiration": "Respiration régulière, sans bloquer.",
-  "apport": "C'est un exercice de prévention pure. La coiffe des rotateurs stabilise la tête de l'humérus, alors que les tractions et les dorsaux tirent l'épaule en rotation interne. Renforcer les rotateurs externes protège l'épaule du grimpeur, surtout sur les prises lointaines, les jetés et les épaules bras tendus."
+  "apport": "C'est un exercice de prévention pure. La coiffe des rotateurs stabilise la tête de l'humérus, alors que les tractions et les dorsaux tirent l'épaule en rotation interne. Renforcer les rotateurs externes protège l'épaule du grimpeur, surtout sur les prises lointaines, les jetés et les épaules bras tendus.",
+  "rendu": "fiches/rendu/rotation-externe.webp"
  },
  "pompes-lestees": {
   "titre": "Pompes lestées",
@@ -74,7 +76,8 @@
    "Amplitude complète à chaque répétition."
   ],
   "respiration": "Inspire en descendant, souffle en poussant.",
-  "apport": "C'est la poussée horizontale du programme, l'antagoniste direct de la traction. Elle équilibre pectoraux et triceps face aux dorsaux très sollicités en escalade. La « pompe plus » en fin de mouvement renforce le dentelé antérieur, qui stabilise l'omoplate. Le lest permet de progresser en force sans faire des séries interminables."
+  "apport": "C'est la poussée horizontale du programme, l'antagoniste direct de la traction. Elle équilibre pectoraux et triceps face aux dorsaux très sollicités en escalade. La « pompe plus » en fin de mouvement renforce le dentelé antérieur, qui stabilise l'omoplate. Le lest permet de progresser en force sans faire des séries interminables.",
+  "rendu": "fiches/rendu/pompes-lestees.webp"
  },
  "y-sol": {
   "titre": "Y au sol",
@@ -99,7 +102,8 @@
    "Sans poids au début, puis 0,5 à 1 kg par main au maximum."
   ],
   "respiration": "Souffle en montant, inspire en redescendant.",
-  "apport": "Le trapèze inférieur maintient les omoplates basses et contre le thorax. C'est souvent le maillon faible chez le grimpeur, dont les épaules ont tendance à s'enrouler vers l'avant. Ce petit exercice améliore la posture et l'« engagement » des épaules en suspension, et protège des conflits sous l'acromion."
+  "apport": "Le trapèze inférieur maintient les omoplates basses et contre le thorax. C'est souvent le maillon faible chez le grimpeur, dont les épaules ont tendance à s'enrouler vers l'avant. Ce petit exercice améliore la posture et l'« engagement » des épaules en suspension, et protège des conflits sous l'acromion.",
+  "rendu": "fiches/rendu/y-sol.webp"
  },
  "front-lever-groupe": {
   "titre": "Front lever groupé",
@@ -127,7 +131,8 @@
    "Pour progresser : éloigne un peu les genoux de la poitrine, puis tends une jambe."
   ],
   "respiration": "Respire court et régulièrement, sans bloquer longtemps.",
-  "apport": "C'est un exercice directement transférable à l'escalade : gainage et force des dorsaux bras tendus, ce qu'il faut pour garder les pieds sur le mur dans les dévers et sur les mouvements de compression. Il entraîne aussi la tension du corps entier qui évite que les pieds décrochent. Le groupé est la première étape vers le front lever complet."
+  "apport": "C'est un exercice directement transférable à l'escalade : gainage et force des dorsaux bras tendus, ce qu'il faut pour garder les pieds sur le mur dans les dévers et sur les mouvements de compression. Il entraîne aussi la tension du corps entier qui évite que les pieds décrochent. Le groupé est la première étape vers le front lever complet.",
+  "rendu": "fiches/rendu/front-lever-groupe.webp"
  },
  "extensions-doigts": {
   "titre": "Extensions des doigts à l'élastique",
@@ -176,7 +181,8 @@
    "Si le talon avant décolle, avance le pied. Descente contrôlée en 2 secondes."
   ],
   "respiration": "Inspire en descendant, souffle en remontant.",
-  "apport": "C'est l'exercice principal des jambes, unilatéral, utile pour la recomposition (gros muscles, grosse dépense). En escalade, il renforce les poussées sur une jambe (montées de pied hautes, rétablissements) et la stabilité du genou et de la hanche. Le travail sur une jambe corrige les déséquilibres droite-gauche sans charger lourdement le dos."
+  "apport": "C'est l'exercice principal des jambes, unilatéral, utile pour la recomposition (gros muscles, grosse dépense). En escalade, il renforce les poussées sur une jambe (montées de pied hautes, rétablissements) et la stabilité du genou et de la hanche. Le travail sur une jambe corrige les déséquilibres droite-gauche sans charger lourdement le dos.",
+  "rendu": "fiches/rendu/split-squat.webp"
  },
  "pallof": {
   "titre": "Pallof press à la poulie",
@@ -201,7 +207,8 @@
    "Fais toutes les répétitions d'un côté, puis change de côté."
   ],
   "respiration": "Souffle en tendant les bras.",
-  "apport": "C'est du gainage anti-rotation. Il apprend au tronc à résister à la torsion, comme quand tu tiens une prise d'une main pendant que le corps veut pivoter (porte qui s'ouvre). Il complète la planche et le front lever en travaillant les obliques, et protège le bas du dos."
+  "apport": "C'est du gainage anti-rotation. Il apprend au tronc à résister à la torsion, comme quand tu tiens une prise d'une main pendant que le corps veut pivoter (porte qui s'ouvre). Il complète la planche et le front lever en travaillant les obliques, et protège le bas du dos.",
+  "rendu": "fiches/rendu/pallof.webp"
  },
  "rdl": {
   "titre": "Soulevé de terre roumain à la barre",
@@ -229,7 +236,8 @@
    "Les courbatures doivent être dans les ischios et les fessiers, pas dans le bas du dos."
   ],
   "respiration": "Inspire et gaine-toi en haut, garde l'air pendant la descente, souffle en fin de remontée.",
-  "apport": "C'est l'exercice clé de la chaîne arrière : ischio-jambiers, fessiers et érecteurs du rachis. Il protège le bas du dos et renforce les ischios, sollicités dans les crochets de talon et les montées de pied hautes. Gros mouvement polyarticulaire, il pèse aussi dans la recomposition. Il équilibre enfin le split squat, plus orienté quadriceps."
+  "apport": "C'est l'exercice clé de la chaîne arrière : ischio-jambiers, fessiers et érecteurs du rachis. Il protège le bas du dos et renforce les ischios, sollicités dans les crochets de talon et les montées de pied hautes. Gros mouvement polyarticulaire, il pèse aussi dans la recomposition. Il équilibre enfin le split squat, plus orienté quadriceps.",
+  "rendu": "fiches/rendu/rdl.webp"
  },
  "dips": {
   "titre": "Dips aux barres parallèles",
@@ -253,7 +261,8 @@
    "Une douleur à l'avant de l'épaule : réduis l'amplitude ou passe aux pompes."
   ],
   "respiration": "Inspire en descendant, souffle en poussant.",
-  "apport": "C'est la poussée verticale vers le bas, le mouvement du rétablissement en haut d'un bloc ou au-dessus d'une prise. Il renforce fortement triceps et pectoraux, antagonistes des muscles de traction. L'amplitude reste limitée pour ménager l'avant de l'épaule."
+  "apport": "C'est la poussée verticale vers le bas, le mouvement du rétablissement en haut d'un bloc ou au-dessus d'une prise. Il renforce fortement triceps et pectoraux, antagonistes des muscles de traction. L'amplitude reste limitée pour ménager l'avant de l'épaule.",
+  "rendu": "fiches/rendu/dips.webp"
  },
  "leg-curl-nordique": {
   "titre": "Leg curl nordique",
@@ -278,7 +287,8 @@
    "Utile pour les talons crochets, qui sollicitent les ischios genou plié."
   ],
   "respiration": "Souffle pendant la descente.",
-  "apport": "C'est le meilleur exercice sans machine pour des ischio-jambiers forts en allongement. C'est la meilleure prévention connue des déchirures des ischios. En escalade, il prépare aux crochets de talon appuyés, où l'ischio tire genou plié contre une charge importante."
+  "apport": "C'est le meilleur exercice sans machine pour des ischio-jambiers forts en allongement. C'est la meilleure prévention connue des déchirures des ischios. En escalade, il prépare aux crochets de talon appuyés, où l'ischio tire genou plié contre une charge importante.",
+  "rendu": "fiches/rendu/leg-curl-nordique.webp"
  },
  "rowing-inverse": {
   "titre": "Rowing inversé à la barre",
@@ -304,7 +314,8 @@
    "Corps plus horizontal = plus dur ; ensuite pieds surélevés, puis lest."
   ],
   "respiration": "Souffle en tirant, inspire en redescendant.",
-  "apport": "C'est une traction horizontale, qui complète la traction verticale des blocs et des tractions. Il renforce le milieu du dos (trapèze moyen, rhomboïdes) qui tient les omoplates en arrière, utile pour la posture et pour les mouvements en compression ou les tirés vers la poitrine. Facile à doser selon l'inclinaison du corps."
+  "apport": "C'est une traction horizontale, qui complète la traction verticale des blocs et des tractions. Il renforce le milieu du dos (trapèze moyen, rhomboïdes) qui tient les omoplates en arrière, utile pour la posture et pour les mouvements en compression ou les tirés vers la poitrine. Facile à doser selon l'inclinaison du corps.",
+  "rendu": "fiches/rendu/rowing-inverse.webp"
  },
  "curl-inverse": {
   "titre": "Curl inversé à la barre EZ",
@@ -328,7 +339,8 @@
    "Charge modérée et exécution stricte : c'est un exercice de protection du coude pour le grimpeur."
   ],
   "respiration": "Souffle en montant, inspire en descendant.",
-  "apport": "C'est la prévention du coude du grimpeur. Le brachio-radial et le brachial travaillent beaucoup en escalade, en particulier sur les prises en pronation. Les renforcer en dehors du mur, avec une charge modérée et stricte, aide à prévenir les douleurs du coude et renforce les blocages bras fléchis."
+  "apport": "C'est la prévention du coude du grimpeur. Le brachio-radial et le brachial travaillent beaucoup en escalade, en particulier sur les prises en pronation. Les renforcer en dehors du mur, avec une charge modérée et stricte, aide à prévenir les douleurs du coude et renforce les blocages bras fléchis.",
+  "rendu": "fiches/rendu/curl-inverse.webp"
  },
  "tractions": {
   "titre": "Tractions",
@@ -355,7 +367,8 @@
    "Pour la force : séries courtes (3 à 5) avec lest, en gardant 2 répétitions en réserve."
   ],
   "respiration": "Souffle en montant, inspire en descendant.",
-  "apport": "C'est le mouvement de base de l'escalade : tirer son poids du corps. En séries courtes et lestées, il développe la force maximale des dorsaux et des fléchisseurs du coude, utile sur les blocages et les mouvements longs. Il se fait avec des épaules actives, ce qui protège l'articulation."
+  "apport": "C'est le mouvement de base de l'escalade : tirer son poids du corps. En séries courtes et lestées, il développe la force maximale des dorsaux et des fléchisseurs du coude, utile sur les blocages et les mouvements longs. Il se fait avec des épaules actives, ce qui protège l'articulation.",
+  "rendu": "fiches/rendu/tractions.webp"
  },
  "face-pull": {
   "titre": "Face pull à la poulie haute",
@@ -380,7 +393,8 @@
    "Charge modérée : c'est la rotation en fin de mouvement qui compte."
   ],
   "respiration": "Souffle en tirant.",
-  "apport": "C'est un exercice d'équilibre de l'épaule. Il renforce l'arrière de l'épaule et les rotateurs externes, souvent faibles par rapport à l'avant. Il contrebalance les poussées de la séance A et les tractions, améliore la posture et protège la coiffe des rotateurs."
+  "apport": "C'est un exercice d'équilibre de l'épaule. Il renforce l'arrière de l'épaule et les rotateurs externes, souvent faibles par rapport à l'avant. Il contrebalance les poussées de la séance A et les tractions, améliore la posture et protège la coiffe des rotateurs.",
+  "rendu": "fiches/rendu/face-pull.webp"
  },
  "releves-jambes": {
   "titre": "Relevés de jambes suspendu",
@@ -405,7 +419,8 @@
    "Pour progresser : jambes plus hautes, pieds à la barre, puis front lever."
   ],
   "respiration": "Souffle en montant.",
-  "apport": "C'est du gainage dynamique en suspension, très proche de l'escalade : remonter les pieds sur une prise haute dans un dévers, garder le contact des pieds. Il renforce les abdominaux et les fléchisseurs de hanche, tout en entretenant la prise et la suspension active."
+  "apport": "C'est du gainage dynamique en suspension, très proche de l'escalade : remonter les pieds sur une prise haute dans un dévers, garder le contact des pieds. Il renforce les abdominaux et les fléchisseurs de hanche, tout en entretenant la prise et la suspension active.",
+  "rendu": "fiches/rendu/releves-jambes.webp"
  },
  "gainage-planche": {
   "titre": "Gainage planche",
@@ -430,7 +445,8 @@
    "Regard vers le sol, nuque dans l'alignement."
   ],
   "respiration": "Respire calmement pendant toute la tenue.",
-  "apport": "C'est la base du gainage : apprendre à garder le tronc rigide. Il soutient tous les autres exercices (développé, split squat, RDL) en protégeant le bas du dos, et sert de travail de fond peu fatigant en fin de séance."
+  "apport": "C'est la base du gainage : apprendre à garder le tronc rigide. Il soutient tous les autres exercices (développé, split squat, RDL) en protégeant le bas du dos, et sert de travail de fond peu fatigant en fin de séance.",
+  "rendu": "fiches/rendu/gainage-planche.webp"
  },
  "poutre-repeaters": {
   "titre": "Suspensions à la poutre (repeaters)",
@@ -455,6 +471,7 @@
    "Règle le lest ou l'assistance pour finir chaque série avec un peu de marge, jamais à l'échec."
   ],
   "respiration": "Respire pendant la suspension, ne bloque pas.",
-  "apport": "C'est l'entraînement spécifique de la force des doigts, le facteur qui limite le plus souvent la progression en bloc et en voie. Les suspensions répétées (7 s / 3 s) développent force et endurance de force sur les réglettes. Elles se font en semi-arqué, sans jamais aller à l'échec, pour protéger les poulies des doigts."
+  "apport": "C'est l'entraînement spécifique de la force des doigts, le facteur qui limite le plus souvent la progression en bloc et en voie. Les suspensions répétées (7 s / 3 s) développent force et endurance de force sur les réglettes. Elles se font en semi-arqué, sans jamais aller à l'échec, pour protéger les poulies des doigts.",
+  "rendu": "fiches/rendu/poutre-repeaters.webp"
  }
 }
