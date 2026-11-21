@@ -64,6 +64,7 @@ try:
     sh.light = 'STUDIO'; sh.color_type = 'OBJECT'; sh.show_cavity = True
     sh.show_object_outline = True; sh.object_outline_color = (0.15, 0.1, 0.08); sh.show_shadows = False
     sc.render.resolution_x, sc.render.resolution_y, sc.render.resolution_percentage = 600, 960, 100
+    bpy.context.view_layer.update()
     pts = []
     for o in musc:
         for c in o.bound_box:
