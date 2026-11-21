@@ -1,164 +1,460 @@
 {
  "dev-militaire": {
   "titre": "Développé militaire debout aux haltères",
-  "principaux": ["Deltoïdes (faisceaux antérieur et moyen)", "Triceps brachial"],
-  "secondaires": ["Trapèze supérieur", "Dentelé antérieur", "Abdominaux et fessiers (gainage)"],
+  "principaux": [
+   "Deltoïdes (faisceaux antérieur et moyen)",
+   "Triceps brachial"
+  ],
+  "secondaires": [
+   "Trapèze supérieur",
+   "Dentelé antérieur",
+   "Abdominaux et fessiers (gainage)"
+  ],
   "depart": "Debout, pieds écartés de la largeur du bassin, genoux déverrouillés. Haltères à hauteur des épaules, paumes face à face (prise neutre, plus douce pour l'épaule) ou vers l'avant, coudes légèrement en avant du buste.",
-  "mouvement": ["Pousse les haltères vers le haut en les rapprochant un peu, jusqu'à bras tendus au-dessus de la tête, biceps près des oreilles.", "Redescends en 2 à 3 secondes jusqu'à hauteur des épaules."],
-  "attention": ["Serre fessiers et abdos : les côtes restent basses, le bas du dos ne se cambre pas.", "Pas d'élan avec les jambes, sinon ce n'est plus le même exercice.", "Poignets droits, empilés au-dessus des coudes.", "En haut, laisse les omoplates monter et tourner : c'est bon pour l'épaule, ne les bloque pas en arrière.", "Tête neutre : en haut, elle passe légèrement devant, entre les bras."],
-  "respiration": "Inspire en bas en te gainant, souffle en fin de poussée."
+  "mouvement": [
+   "Pousse les haltères vers le haut en les rapprochant un peu, jusqu'à bras tendus au-dessus de la tête, biceps près des oreilles.",
+   "Redescends en 2 à 3 secondes jusqu'à hauteur des épaules."
+  ],
+  "attention": [
+   "Serre fessiers et abdos : les côtes restent basses, le bas du dos ne se cambre pas.",
+   "Pas d'élan avec les jambes, sinon ce n'est plus le même exercice.",
+   "Poignets droits, empilés au-dessus des coudes.",
+   "En haut, laisse les omoplates monter et tourner : c'est bon pour l'épaule, ne les bloque pas en arrière.",
+   "Tête neutre : en haut, elle passe légèrement devant, entre les bras."
+  ],
+  "respiration": "Inspire en bas en te gainant, souffle en fin de poussée.",
+  "apport": "C'est l'exercice de poussée verticale de la séance A. L'escalade fait surtout tirer vers le bas : pousser au-dessus de la tête rééquilibre l'épaule et entretient la mobilité en élévation. Tu en as besoin sur les rétablissements et les mouvements en poussée (mantle). Mouvement polyarticulaire chargé, il compte aussi pour la recomposition : beaucoup de muscle sollicité, progression facile à suivre."
  },
  "rotation-externe": {
   "titre": "Rotation externe à la poulie",
-  "principaux": ["Infra-épineux", "Petit rond (coiffe des rotateurs)"],
-  "secondaires": ["Deltoïde postérieur", "Trapèze (faisceau moyen)"],
+  "principaux": [
+   "Infra-épineux",
+   "Petit rond (coiffe des rotateurs)"
+  ],
+  "secondaires": [
+   "Deltoïde postérieur",
+   "Trapèze (faisceau moyen)"
+  ],
   "depart": "Debout de profil par rapport à la poulie réglée à hauteur du coude (ou élastique accroché au même niveau). Le bras qui travaille est le plus éloigné de la poulie : coude plié à 90°, collé au flanc avec une serviette roulée entre le coude et le corps, avant-bras devant le ventre.",
-  "mouvement": ["Ouvre l'avant-bras vers l'extérieur, comme une porte qui pivote sur le coude, jusqu'à ce qu'il pointe vers l'extérieur (ou un peu avant si l'épaule tire).", "Tiens 1 seconde, puis reviens en 2 à 3 secondes."],
-  "attention": ["Le coude reste collé au corps et plié à 90° du début à la fin : la serviette ne doit pas tomber.", "Charge légère : ce sont de petits muscles, vise 12 à 15 reps propres sans compensation.", "Épaule basse : ne la hausse pas vers l'oreille.", "Le buste ne tourne pas pour aider.", "Amplitude sans douleur ; une gêne à l'avant de l'épaule, c'est le signal de réduire l'amplitude."],
-  "respiration": "Respiration régulière, sans bloquer."
+  "mouvement": [
+   "Ouvre l'avant-bras vers l'extérieur, comme une porte qui pivote sur le coude, jusqu'à ce qu'il pointe vers l'extérieur (ou un peu avant si l'épaule tire).",
+   "Tiens 1 seconde, puis reviens en 2 à 3 secondes."
+  ],
+  "attention": [
+   "Le coude reste collé au corps et plié à 90° du début à la fin : la serviette ne doit pas tomber.",
+   "Charge légère : ce sont de petits muscles, vise 12 à 15 reps propres sans compensation.",
+   "Épaule basse : ne la hausse pas vers l'oreille.",
+   "Le buste ne tourne pas pour aider.",
+   "Amplitude sans douleur ; une gêne à l'avant de l'épaule, c'est le signal de réduire l'amplitude."
+  ],
+  "respiration": "Respiration régulière, sans bloquer.",
+  "apport": "C'est un exercice de prévention pure. La coiffe des rotateurs stabilise la tête de l'humérus, alors que les tractions et les dorsaux tirent l'épaule en rotation interne. Renforcer les rotateurs externes protège l'épaule du grimpeur, surtout sur les prises lointaines, les jetés et les épaules bras tendus."
  },
  "pompes-lestees": {
   "titre": "Pompes lestées",
-  "principaux": ["Grand pectoral", "Triceps brachial"],
-  "secondaires": ["Deltoïde antérieur", "Dentelé antérieur", "Abdominaux (gainage)"],
+  "principaux": [
+   "Grand pectoral",
+   "Triceps brachial"
+  ],
+  "secondaires": [
+   "Deltoïde antérieur",
+   "Dentelé antérieur",
+   "Abdominaux (gainage)"
+  ],
   "depart": "En appui sur les mains et la pointe des pieds, mains un peu plus larges que les épaules, doigts vers l'avant, corps gainé et aligné de la tête aux talons. Lest : un disque posé à plat entre les omoplates, ou un élastique passé dans le dos et tenu sous les mains.",
-  "mouvement": ["Descends jusqu'à ce que la poitrine frôle le sol, coudes orientés à environ 45° du corps.", "Repousse le sol jusqu'à bras tendus, puis écarte encore un peu les omoplates en fin de mouvement (« pompe plus »)."],
-  "attention": ["Bassin aligné : ni fesses en l'air, ni creux dans le bas du dos. Serre fessiers et abdos.", "Coudes à 45°, pas en croix : moins de contraintes pour l'avant de l'épaule.", "Tête dans l'alignement, regard vers le sol un peu devant les mains.", "Disque bien centré entre les omoplates, ni sur la nuque, ni sur les lombaires.", "Amplitude complète à chaque répétition."],
-  "respiration": "Inspire en descendant, souffle en poussant."
+  "mouvement": [
+   "Descends jusqu'à ce que la poitrine frôle le sol, coudes orientés à environ 45° du corps.",
+   "Repousse le sol jusqu'à bras tendus, puis écarte encore un peu les omoplates en fin de mouvement (« pompe plus »)."
+  ],
+  "attention": [
+   "Bassin aligné : ni fesses en l'air, ni creux dans le bas du dos. Serre fessiers et abdos.",
+   "Coudes à 45°, pas en croix : moins de contraintes pour l'avant de l'épaule.",
+   "Tête dans l'alignement, regard vers le sol un peu devant les mains.",
+   "Disque bien centré entre les omoplates, ni sur la nuque, ni sur les lombaires.",
+   "Amplitude complète à chaque répétition."
+  ],
+  "respiration": "Inspire en descendant, souffle en poussant.",
+  "apport": "C'est la poussée horizontale du programme, l'antagoniste direct de la traction. Elle équilibre pectoraux et triceps face aux dorsaux très sollicités en escalade. La « pompe plus » en fin de mouvement renforce le dentelé antérieur, qui stabilise l'omoplate. Le lest permet de progresser en force sans faire des séries interminables."
  },
  "y-sol": {
   "titre": "Y au sol",
-  "principaux": ["Trapèze (faisceaux moyen et inférieur)"],
-  "secondaires": ["Deltoïde postérieur", "Infra-épineux", "Rhomboïdes"],
+  "principaux": [
+   "Trapèze (faisceaux moyen et inférieur)"
+  ],
+  "secondaires": [
+   "Deltoïde postérieur",
+   "Infra-épineux",
+   "Rhomboïdes"
+  ],
   "depart": "Allongé sur le ventre, front posé sur une serviette roulée. Bras tendus au-dessus de la tête, écartés en Y (environ 30° de chaque côté de l'axe du corps), pouces tournés vers le plafond.",
-  "mouvement": ["Décolle les bras du sol en abaissant et en serrant les omoplates, comme pour les ranger dans tes poches arrière.", "Tiens 2 secondes en haut, puis redescends lentement."],
-  "attention": ["Le mouvement est petit : quelques centimètres suffisent.", "Épaules loin des oreilles : si le haut des trapèzes se contracte, tu compenses.", "Ne relève pas la tête et ne cambre pas : le front reste près de la serviette.", "Pouces vers le haut pendant tout le mouvement.", "Sans poids au début, puis 0,5 à 1 kg par main au maximum."],
-  "respiration": "Souffle en montant, inspire en redescendant."
+  "mouvement": [
+   "Décolle les bras du sol en abaissant et en serrant les omoplates, comme pour les ranger dans tes poches arrière.",
+   "Tiens 2 secondes en haut, puis redescends lentement."
+  ],
+  "attention": [
+   "Le mouvement est petit : quelques centimètres suffisent.",
+   "Épaules loin des oreilles : si le haut des trapèzes se contracte, tu compenses.",
+   "Ne relève pas la tête et ne cambre pas : le front reste près de la serviette.",
+   "Pouces vers le haut pendant tout le mouvement.",
+   "Sans poids au début, puis 0,5 à 1 kg par main au maximum."
+  ],
+  "respiration": "Souffle en montant, inspire en redescendant.",
+  "apport": "Le trapèze inférieur maintient les omoplates basses et contre le thorax. C'est souvent le maillon faible chez le grimpeur, dont les épaules ont tendance à s'enrouler vers l'avant. Ce petit exercice améliore la posture et l'« engagement » des épaules en suspension, et protège des conflits sous l'acromion."
  },
  "front-lever-groupe": {
   "titre": "Front lever groupé",
-  "principaux": ["Grand dorsal", "Grand droit de l'abdomen"],
-  "secondaires": ["Deltoïde postérieur", "Triceps (longue portion)", "Grand rond", "Fléchisseurs de hanche"],
+  "principaux": [
+   "Grand dorsal",
+   "Grand droit de l'abdomen"
+  ],
+  "secondaires": [
+   "Deltoïde postérieur",
+   "Triceps (longue portion)",
+   "Grand rond",
+   "Fléchisseurs de hanche"
+  ],
   "depart": "Suspendu à la barre, prise en pronation largeur d'épaules, bras tendus, omoplates abaissées (épaules loin des oreilles).",
-  "mouvement": ["Bras toujours tendus, appuie sur la barre comme pour la pousser vers tes hanches et ramène les genoux contre la poitrine.", "Monte jusqu'à ce que le dos soit horizontal, face au plafond, hanches à la hauteur des épaules.", "Tiens 8 à 10 secondes, puis redescends sous contrôle."],
-  "attention": ["Coudes verrouillés : si les bras plient, ce n'est plus un front lever.", "Omoplates serrées et abaissées tout du long.", "Dos plat et horizontal : les hanches ne pendent pas sous la ligne des épaules.", "Arrête la série dès que la position se dégrade : la qualité compte plus que la durée.", "Pour progresser : éloigne un peu les genoux de la poitrine, puis tends une jambe."],
-  "respiration": "Respire court et régulièrement, sans bloquer longtemps."
+  "mouvement": [
+   "Bras toujours tendus, appuie sur la barre comme pour la pousser vers tes hanches et ramène les genoux contre la poitrine.",
+   "Monte jusqu'à ce que le dos soit horizontal, face au plafond, hanches à la hauteur des épaules.",
+   "Tiens 8 à 10 secondes, puis redescends sous contrôle."
+  ],
+  "attention": [
+   "Coudes verrouillés : si les bras plient, ce n'est plus un front lever.",
+   "Omoplates serrées et abaissées tout du long.",
+   "Dos plat et horizontal : les hanches ne pendent pas sous la ligne des épaules.",
+   "Arrête la série dès que la position se dégrade : la qualité compte plus que la durée.",
+   "Pour progresser : éloigne un peu les genoux de la poitrine, puis tends une jambe."
+  ],
+  "respiration": "Respire court et régulièrement, sans bloquer longtemps.",
+  "apport": "C'est un exercice directement transférable à l'escalade : gainage et force des dorsaux bras tendus, ce qu'il faut pour garder les pieds sur le mur dans les dévers et sur les mouvements de compression. Il entraîne aussi la tension du corps entier qui évite que les pieds décrochent. Le groupé est la première étape vers le front lever complet."
  },
  "extensions-doigts": {
   "titre": "Extensions des doigts à l'élastique",
-  "principaux": ["Extenseur commun des doigts"],
-  "secondaires": ["Extenseurs radiaux et ulnaire du poignet"],
+  "principaux": [
+   "Extenseur commun des doigts"
+  ],
+  "secondaires": [
+   "Extenseurs radiaux et ulnaire du poignet"
+  ],
   "depart": "Un élastique (ou un gros bracelet) autour des cinq doigts, au niveau des dernières phalanges. Doigts réunis en bec, poignet neutre, avant-bras posé ou le long du corps.",
-  "mouvement": ["Ouvre la main en écartant les doigts au maximum contre l'élastique.", "Tiens 1 seconde, puis referme lentement."],
-  "attention": ["Poignet droit ou légèrement relevé, jamais cassé vers le bas.", "Mouvement lent dans les deux sens, sans à-coups.", "Ces muscles équilibrent les fléchisseurs, très sollicités en escalade : utile pour le coude et l'avant-bras.", "20 à 30 répétitions sans douleur ; double l'élastique pour progresser."],
-  "respiration": "Respiration libre."
+  "mouvement": [
+   "Ouvre la main en écartant les doigts au maximum contre l'élastique.",
+   "Tiens 1 seconde, puis referme lentement."
+  ],
+  "attention": [
+   "Poignet droit ou légèrement relevé, jamais cassé vers le bas.",
+   "Mouvement lent dans les deux sens, sans à-coups.",
+   "Ces muscles équilibrent les fléchisseurs, très sollicités en escalade : utile pour le coude et l'avant-bras.",
+   "20 à 30 répétitions sans douleur ; double l'élastique pour progresser."
+  ],
+  "respiration": "Respiration libre.",
+  "apport": "C'est la prévention du coude et de l'avant-bras. Les fléchisseurs des doigts travaillent à chaque prise ; les extenseurs, presque jamais. Ce déséquilibre favorise les douleurs à l'extérieur du coude (épicondylite). Quelques séries d'extensions rééquilibrent l'avant-bras pour un coût en fatigue quasi nul."
  },
  "split-squat": {
   "titre": "Split squat bulgare aux haltères",
-  "principaux": ["Quadriceps", "Grand fessier"],
-  "secondaires": ["Ischio-jambiers", "Moyen fessier", "Adducteurs", "Mollets (stabilisation)"],
+  "principaux": [
+   "Quadriceps",
+   "Grand fessier"
+  ],
+  "secondaires": [
+   "Ischio-jambiers",
+   "Moyen fessier",
+   "Adducteurs",
+   "Mollets (stabilisation)"
+  ],
   "depart": "Dos à un banc, une caisse ou une chaise à hauteur de genou. Pose le dessus du pied arrière sur le support, pied avant une grande foulée devant. Haltères en mains, bras le long du corps.",
-  "mouvement": ["Descends verticalement en pliant le genou avant, jusqu'à ce que la cuisse avant approche l'horizontale et que le genou arrière frôle le sol.", "Remonte en poussant dans le talon et le milieu du pied avant."],
-  "attention": ["Le genou avant suit l'axe du pied : il ne rentre pas vers l'intérieur.", "Le pied arrière n'est qu'un appui : presque tout le poids est sur la jambe avant.", "Buste un peu penché = plus de fessiers ; buste droit = plus de quadriceps.", "Bassin face à l'avant, il ne pivote pas.", "Si le talon avant décolle, avance le pied. Descente contrôlée en 2 secondes."],
-  "respiration": "Inspire en descendant, souffle en remontant."
+  "mouvement": [
+   "Descends verticalement en pliant le genou avant, jusqu'à ce que la cuisse avant approche l'horizontale et que le genou arrière frôle le sol.",
+   "Remonte en poussant dans le talon et le milieu du pied avant."
+  ],
+  "attention": [
+   "Le genou avant suit l'axe du pied : il ne rentre pas vers l'intérieur.",
+   "Le pied arrière n'est qu'un appui : presque tout le poids est sur la jambe avant.",
+   "Buste un peu penché = plus de fessiers ; buste droit = plus de quadriceps.",
+   "Bassin face à l'avant, il ne pivote pas.",
+   "Si le talon avant décolle, avance le pied. Descente contrôlée en 2 secondes."
+  ],
+  "respiration": "Inspire en descendant, souffle en remontant.",
+  "apport": "C'est l'exercice principal des jambes, unilatéral, utile pour la recomposition (gros muscles, grosse dépense). En escalade, il renforce les poussées sur une jambe (montées de pied hautes, rétablissements) et la stabilité du genou et de la hanche. Le travail sur une jambe corrige les déséquilibres droite-gauche sans charger lourdement le dos."
  },
  "pallof": {
   "titre": "Pallof press à la poulie",
-  "principaux": ["Obliques", "Transverse et grand droit de l'abdomen (anti-rotation)"],
-  "secondaires": ["Moyen fessier", "Deltoïde antérieur", "Dentelé antérieur"],
+  "principaux": [
+   "Obliques",
+   "Transverse et grand droit de l'abdomen (anti-rotation)"
+  ],
+  "secondaires": [
+   "Moyen fessier",
+   "Deltoïde antérieur",
+   "Dentelé antérieur"
+  ],
   "depart": "Debout de profil par rapport à la poulie réglée à hauteur de poitrine, à un pas sur le côté pour que le câble soit tendu. Pieds largeur d'épaules, genoux légèrement fléchis, poignée tenue à deux mains contre le sternum.",
-  "mouvement": ["Tends les bras droit devant toi.", "Tiens 2 secondes en empêchant le buste de tourner vers la poulie, puis ramène la poignée au sternum."],
-  "attention": ["Buste et bassin restent face à l'avant : c'est la résistance à la rotation qui travaille.", "Côtes basses, fessiers serrés, pas de cambrure.", "Épaules basses, bras à hauteur de poitrine.", "Fais toutes les répétitions d'un côté, puis change de côté."],
-  "respiration": "Souffle en tendant les bras."
+  "mouvement": [
+   "Tends les bras droit devant toi.",
+   "Tiens 2 secondes en empêchant le buste de tourner vers la poulie, puis ramène la poignée au sternum."
+  ],
+  "attention": [
+   "Buste et bassin restent face à l'avant : c'est la résistance à la rotation qui travaille.",
+   "Côtes basses, fessiers serrés, pas de cambrure.",
+   "Épaules basses, bras à hauteur de poitrine.",
+   "Fais toutes les répétitions d'un côté, puis change de côté."
+  ],
+  "respiration": "Souffle en tendant les bras.",
+  "apport": "C'est du gainage anti-rotation. Il apprend au tronc à résister à la torsion, comme quand tu tiens une prise d'une main pendant que le corps veut pivoter (porte qui s'ouvre). Il complète la planche et le front lever en travaillant les obliques, et protège le bas du dos."
  },
  "rdl": {
   "titre": "Soulevé de terre roumain à la barre",
-  "principaux": ["Ischio-jambiers", "Grand fessier"],
-  "secondaires": ["Érecteurs du rachis", "Trapèze", "Fléchisseurs des doigts (prise)"],
+  "principaux": [
+   "Ischio-jambiers",
+   "Grand fessier"
+  ],
+  "secondaires": [
+   "Érecteurs du rachis",
+   "Trapèze",
+   "Fléchisseurs des doigts (prise)"
+  ],
   "depart": "Debout, barre en pronation, mains largeur d'épaules, bras tendus contre les cuisses. Pieds largeur de bassin, genoux légèrement fléchis.",
-  "mouvement": ["Pousse les fesses vers l'arrière en gardant le dos plat : le buste se penche parce que les hanches reculent.", "La barre glisse le long des cuisses puis des tibias jusqu'à sentir un étirement franc derrière les cuisses (souvent à mi-tibia).", "Remonte en poussant les hanches vers l'avant et en serrant les fessiers."],
-  "attention": ["L'angle des genoux ne change pas pendant tout le mouvement.", "Dos plat : arrête la descente avant qu'il ne s'arrondisse.", "Barre collée aux jambes, épaules basses.", "Descente en 3 secondes, sans rebond en bas.", "En haut, debout droit, sans te cambrer en arrière.", "Les courbatures doivent être dans les ischios et les fessiers, pas dans le bas du dos."],
-  "respiration": "Inspire et gaine-toi en haut, garde l'air pendant la descente, souffle en fin de remontée."
+  "mouvement": [
+   "Pousse les fesses vers l'arrière en gardant le dos plat : le buste se penche parce que les hanches reculent.",
+   "La barre glisse le long des cuisses puis des tibias jusqu'à sentir un étirement franc derrière les cuisses (souvent à mi-tibia).",
+   "Remonte en poussant les hanches vers l'avant et en serrant les fessiers."
+  ],
+  "attention": [
+   "L'angle des genoux ne change pas pendant tout le mouvement.",
+   "Dos plat : arrête la descente avant qu'il ne s'arrondisse.",
+   "Barre collée aux jambes, épaules basses.",
+   "Descente en 3 secondes, sans rebond en bas.",
+   "En haut, debout droit, sans te cambrer en arrière.",
+   "Les courbatures doivent être dans les ischios et les fessiers, pas dans le bas du dos."
+  ],
+  "respiration": "Inspire et gaine-toi en haut, garde l'air pendant la descente, souffle en fin de remontée.",
+  "apport": "C'est l'exercice clé de la chaîne arrière : ischio-jambiers, fessiers et érecteurs du rachis. Il protège le bas du dos et renforce les ischios, sollicités dans les crochets de talon et les montées de pied hautes. Gros mouvement polyarticulaire, il pèse aussi dans la recomposition. Il équilibre enfin le split squat, plus orienté quadriceps."
  },
  "dips": {
   "titre": "Dips aux barres parallèles",
-  "principaux": ["Triceps brachial", "Grand pectoral (partie basse)"],
-  "secondaires": ["Deltoïde antérieur"],
+  "principaux": [
+   "Triceps brachial",
+   "Grand pectoral (partie basse)"
+  ],
+  "secondaires": [
+   "Deltoïde antérieur"
+  ],
   "depart": "En appui bras tendus sur les barres, épaules basses, buste légèrement penché en avant, jambes fléchies et croisées. Assistance éventuelle : élastique sous les genoux.",
-  "mouvement": ["Descends en pliant les coudes vers l'arrière jusqu'à ce que les bras soient à l'horizontale.", "Remonte jusqu'à bras tendus en poussant sur les barres."],
-  "attention": ["Ne descends pas plus bas que le bras à l'horizontale : au-delà, l'avant de l'épaule est très étiré.", "Épaules basses, loin des oreilles, pendant toute la série.", "Coudes vers l'arrière, pas écartés sur les côtés.", "Descente contrôlée, pas de rebond en bas.", "Une douleur à l'avant de l'épaule : réduis l'amplitude ou passe aux pompes."],
-  "respiration": "Inspire en descendant, souffle en poussant."
+  "mouvement": [
+   "Descends en pliant les coudes vers l'arrière jusqu'à ce que les bras soient à l'horizontale.",
+   "Remonte jusqu'à bras tendus en poussant sur les barres."
+  ],
+  "attention": [
+   "Ne descends pas plus bas que le bras à l'horizontale : au-delà, l'avant de l'épaule est très étiré.",
+   "Épaules basses, loin des oreilles, pendant toute la série.",
+   "Coudes vers l'arrière, pas écartés sur les côtés.",
+   "Descente contrôlée, pas de rebond en bas.",
+   "Une douleur à l'avant de l'épaule : réduis l'amplitude ou passe aux pompes."
+  ],
+  "respiration": "Inspire en descendant, souffle en poussant.",
+  "apport": "C'est la poussée verticale vers le bas, le mouvement du rétablissement en haut d'un bloc ou au-dessus d'une prise. Il renforce fortement triceps et pectoraux, antagonistes des muscles de traction. L'amplitude reste limitée pour ménager l'avant de l'épaule."
  },
  "leg-curl-nordique": {
   "titre": "Leg curl nordique",
-  "principaux": ["Ischio-jambiers"],
-  "secondaires": ["Gastrocnémiens", "Grand fessier et abdominaux (gainage)"],
+  "principaux": [
+   "Ischio-jambiers"
+  ],
+  "secondaires": [
+   "Gastrocnémiens",
+   "Grand fessier et abdominaux (gainage)"
+  ],
   "depart": "À genoux sur un tapis épais, chevilles bloquées sous une barre chargée posée au sol (ou tenues par un partenaire). Corps droit des genoux à la tête, hanches tendues, mains devant la poitrine.",
-  "mouvement": ["Bascule vers l'avant le plus lentement possible (3 à 5 secondes) en freinant avec l'arrière des cuisses, corps rigide.", "Quand tu ne peux plus freiner, rattrape-toi sur les mains comme en pompe.", "Repousse-toi avec les mains pour revenir à genoux."],
-  "attention": ["Les hanches restent tendues : ne recule pas les fesses pour te faciliter la tâche.", "C'est la descente freinée qui compte ; la remontée peut être aidée par les mains.", "Genoux protégés par un coussin épais.", "Grosses courbatures les premières fois : commence par 2 séries de 3 ou 4.", "Utile pour les talons crochets, qui sollicitent les ischios genou plié."],
-  "respiration": "Souffle pendant la descente."
+  "mouvement": [
+   "Bascule vers l'avant le plus lentement possible (3 à 5 secondes) en freinant avec l'arrière des cuisses, corps rigide.",
+   "Quand tu ne peux plus freiner, rattrape-toi sur les mains comme en pompe.",
+   "Repousse-toi avec les mains pour revenir à genoux."
+  ],
+  "attention": [
+   "Les hanches restent tendues : ne recule pas les fesses pour te faciliter la tâche.",
+   "C'est la descente freinée qui compte ; la remontée peut être aidée par les mains.",
+   "Genoux protégés par un coussin épais.",
+   "Grosses courbatures les premières fois : commence par 2 séries de 3 ou 4.",
+   "Utile pour les talons crochets, qui sollicitent les ischios genou plié."
+  ],
+  "respiration": "Souffle pendant la descente.",
+  "apport": "C'est le meilleur exercice sans machine pour des ischio-jambiers forts en allongement. C'est la meilleure prévention connue des déchirures des ischios. En escalade, il prépare aux crochets de talon appuyés, où l'ischio tire genou plié contre une charge importante."
  },
  "rowing-inverse": {
   "titre": "Rowing inversé à la barre",
-  "principaux": ["Grand dorsal", "Trapèze (faisceau moyen)", "Rhomboïdes"],
-  "secondaires": ["Biceps brachial", "Deltoïde postérieur", "Brachial"],
+  "principaux": [
+   "Grand dorsal",
+   "Trapèze (faisceau moyen)",
+   "Rhomboïdes"
+  ],
+  "secondaires": [
+   "Biceps brachial",
+   "Deltoïde postérieur",
+   "Brachial"
+  ],
   "depart": "Barre du rack réglée à hauteur de hanches. Suspends-toi dessous, prise en pronation un peu plus large que les épaules, bras tendus, talons au sol, corps gainé et droit.",
-  "mouvement": ["Tire la poitrine vers la barre en serrant les omoplates, coudes à environ 45° du corps.", "Touche la barre au niveau du bas des pectoraux, puis redescends en 2 secondes."],
-  "attention": ["Corps rigide de la tête aux talons : le bassin ne tombe pas.", "Commence en rapprochant les omoplates, avant de plier les bras.", "La tête reste dans l'alignement, ne la projette pas vers la barre.", "Corps plus horizontal = plus dur ; ensuite pieds surélevés, puis lest."],
-  "respiration": "Souffle en tirant, inspire en redescendant."
+  "mouvement": [
+   "Tire la poitrine vers la barre en serrant les omoplates, coudes à environ 45° du corps.",
+   "Touche la barre au niveau du bas des pectoraux, puis redescends en 2 secondes."
+  ],
+  "attention": [
+   "Corps rigide de la tête aux talons : le bassin ne tombe pas.",
+   "Commence en rapprochant les omoplates, avant de plier les bras.",
+   "La tête reste dans l'alignement, ne la projette pas vers la barre.",
+   "Corps plus horizontal = plus dur ; ensuite pieds surélevés, puis lest."
+  ],
+  "respiration": "Souffle en tirant, inspire en redescendant.",
+  "apport": "C'est une traction horizontale, qui complète la traction verticale des blocs et des tractions. Il renforce le milieu du dos (trapèze moyen, rhomboïdes) qui tient les omoplates en arrière, utile pour la posture et pour les mouvements en compression ou les tirés vers la poitrine. Facile à doser selon l'inclinaison du corps."
  },
  "curl-inverse": {
   "titre": "Curl inversé à la barre EZ",
-  "principaux": ["Brachio-radial", "Brachial"],
-  "secondaires": ["Biceps brachial", "Extenseurs du poignet"],
+  "principaux": [
+   "Brachio-radial",
+   "Brachial"
+  ],
+  "secondaires": [
+   "Biceps brachial",
+   "Extenseurs du poignet"
+  ],
   "depart": "Debout, barre EZ en pronation (paumes vers le bas), mains largeur d'épaules, bras tendus, coudes le long du corps.",
-  "mouvement": ["Plie les coudes pour monter la barre vers les épaules.", "Redescends en 2 à 3 secondes jusqu'à bras tendus."],
-  "attention": ["Coudes fixes contre le corps.", "Pas d'élan du buste ni des hanches.", "Poignets alignés avec les avant-bras, pas cassés vers le bas.", "Charge modérée et exécution stricte : c'est un exercice de protection du coude pour le grimpeur."],
-  "respiration": "Souffle en montant, inspire en descendant."
+  "mouvement": [
+   "Plie les coudes pour monter la barre vers les épaules.",
+   "Redescends en 2 à 3 secondes jusqu'à bras tendus."
+  ],
+  "attention": [
+   "Coudes fixes contre le corps.",
+   "Pas d'élan du buste ni des hanches.",
+   "Poignets alignés avec les avant-bras, pas cassés vers le bas.",
+   "Charge modérée et exécution stricte : c'est un exercice de protection du coude pour le grimpeur."
+  ],
+  "respiration": "Souffle en montant, inspire en descendant.",
+  "apport": "C'est la prévention du coude du grimpeur. Le brachio-radial et le brachial travaillent beaucoup en escalade, en particulier sur les prises en pronation. Les renforcer en dehors du mur, avec une charge modérée et stricte, aide à prévenir les douleurs du coude et renforce les blocages bras fléchis."
  },
  "tractions": {
   "titre": "Tractions",
-  "principaux": ["Grand dorsal", "Biceps brachial"],
-  "secondaires": ["Brachial", "Brachio-radial", "Trapèze (moyen et inférieur)", "Deltoïde postérieur", "Fléchisseurs des doigts"],
+  "principaux": [
+   "Grand dorsal",
+   "Biceps brachial"
+  ],
+  "secondaires": [
+   "Brachial",
+   "Brachio-radial",
+   "Trapèze (moyen et inférieur)",
+   "Deltoïde postérieur",
+   "Fléchisseurs des doigts"
+  ],
   "depart": "Suspendu à la barre, prise en pronation un peu plus large que les épaules, bras tendus, corps gainé.",
-  "mouvement": ["Abaisse d'abord les omoplates, puis tire jusqu'à ce que le menton passe au-dessus de la barre.", "Redescends en 2 à 3 secondes jusqu'à bras tendus."],
-  "attention": ["Pas de balancement ni de coup de reins.", "Épaules basses en haut : ne les laisse pas remonter vers les oreilles.", "En bas, bras tendus mais épaules actives, sans relâcher complètement.", "Pour la force : séries courtes (3 à 5) avec lest, en gardant 2 répétitions en réserve."],
-  "respiration": "Souffle en montant, inspire en descendant."
+  "mouvement": [
+   "Abaisse d'abord les omoplates, puis tire jusqu'à ce que le menton passe au-dessus de la barre.",
+   "Redescends en 2 à 3 secondes jusqu'à bras tendus."
+  ],
+  "attention": [
+   "Pas de balancement ni de coup de reins.",
+   "Épaules basses en haut : ne les laisse pas remonter vers les oreilles.",
+   "En bas, bras tendus mais épaules actives, sans relâcher complètement.",
+   "Pour la force : séries courtes (3 à 5) avec lest, en gardant 2 répétitions en réserve."
+  ],
+  "respiration": "Souffle en montant, inspire en descendant.",
+  "apport": "C'est le mouvement de base de l'escalade : tirer son poids du corps. En séries courtes et lestées, il développe la force maximale des dorsaux et des fléchisseurs du coude, utile sur les blocages et les mouvements longs. Il se fait avec des épaules actives, ce qui protège l'articulation."
  },
  "face-pull": {
   "titre": "Face pull à la poulie haute",
-  "principaux": ["Deltoïde postérieur", "Trapèze (moyen et inférieur)"],
-  "secondaires": ["Infra-épineux et petit rond", "Rhomboïdes", "Deltoïde moyen"],
+  "principaux": [
+   "Deltoïde postérieur",
+   "Trapèze (moyen et inférieur)"
+  ],
+  "secondaires": [
+   "Infra-épineux et petit rond",
+   "Rhomboïdes",
+   "Deltoïde moyen"
+  ],
   "depart": "Face à la poulie réglée à hauteur du front, corde tenue à deux mains, pouces vers toi, bras tendus vers la poulie, un pas en arrière pour tendre le câble.",
-  "mouvement": ["Tire la corde vers ton visage en écartant les mains, coudes hauts.", "En fin de mouvement, tourne les avant-bras vers le haut : les mains finissent de chaque côté de la tête.", "Tiens 2 secondes, puis reviens lentement."],
-  "attention": ["Coudes à hauteur des épaules ou un peu plus haut.", "Pas de cambrure ni de recul du buste pour tirer.", "Charge modérée : c'est la rotation en fin de mouvement qui compte."],
-  "respiration": "Souffle en tirant."
+  "mouvement": [
+   "Tire la corde vers ton visage en écartant les mains, coudes hauts.",
+   "En fin de mouvement, tourne les avant-bras vers le haut : les mains finissent de chaque côté de la tête.",
+   "Tiens 2 secondes, puis reviens lentement."
+  ],
+  "attention": [
+   "Coudes à hauteur des épaules ou un peu plus haut.",
+   "Pas de cambrure ni de recul du buste pour tirer.",
+   "Charge modérée : c'est la rotation en fin de mouvement qui compte."
+  ],
+  "respiration": "Souffle en tirant.",
+  "apport": "C'est un exercice d'équilibre de l'épaule. Il renforce l'arrière de l'épaule et les rotateurs externes, souvent faibles par rapport à l'avant. Il contrebalance les poussées de la séance A et les tractions, améliore la posture et protège la coiffe des rotateurs."
  },
  "releves-jambes": {
   "titre": "Relevés de jambes suspendu",
-  "principaux": ["Grand droit de l'abdomen", "Fléchisseurs de hanche"],
-  "secondaires": ["Obliques", "Droit fémoral", "Fléchisseurs des doigts (prise)"],
+  "principaux": [
+   "Grand droit de l'abdomen",
+   "Fléchisseurs de hanche"
+  ],
+  "secondaires": [
+   "Obliques",
+   "Droit fémoral",
+   "Fléchisseurs des doigts (prise)"
+  ],
   "depart": "Suspendu à la barre, bras tendus, épaules actives, jambes tendues.",
-  "mouvement": ["Monte les jambes tendues jusqu'à l'horizontale (ou plus haut) en enroulant légèrement le bassin.", "Redescends en 2 à 3 secondes sans te balancer."],
-  "attention": ["Pas d'élan : si tu te balances, marque un temps d'arrêt en bas.", "Enroule le bassin en haut pour faire travailler les abdominaux, pas seulement les fléchisseurs de hanche.", "Plie les genoux si tu n'arrives pas à garder les jambes tendues.", "Pour progresser : jambes plus hautes, pieds à la barre, puis front lever."],
-  "respiration": "Souffle en montant."
+  "mouvement": [
+   "Monte les jambes tendues jusqu'à l'horizontale (ou plus haut) en enroulant légèrement le bassin.",
+   "Redescends en 2 à 3 secondes sans te balancer."
+  ],
+  "attention": [
+   "Pas d'élan : si tu te balances, marque un temps d'arrêt en bas.",
+   "Enroule le bassin en haut pour faire travailler les abdominaux, pas seulement les fléchisseurs de hanche.",
+   "Plie les genoux si tu n'arrives pas à garder les jambes tendues.",
+   "Pour progresser : jambes plus hautes, pieds à la barre, puis front lever."
+  ],
+  "respiration": "Souffle en montant.",
+  "apport": "C'est du gainage dynamique en suspension, très proche de l'escalade : remonter les pieds sur une prise haute dans un dévers, garder le contact des pieds. Il renforce les abdominaux et les fléchisseurs de hanche, tout en entretenant la prise et la suspension active."
  },
  "gainage-planche": {
   "titre": "Gainage planche",
-  "principaux": ["Grand droit et transverse de l'abdomen"],
-  "secondaires": ["Obliques", "Grand fessier", "Quadriceps", "Deltoïde antérieur"],
+  "principaux": [
+   "Grand droit et transverse de l'abdomen"
+  ],
+  "secondaires": [
+   "Obliques",
+   "Grand fessier",
+   "Quadriceps",
+   "Deltoïde antérieur"
+  ],
   "depart": "En appui sur les avant-bras, coudes sous les épaules, et sur la pointe des pieds.",
-  "mouvement": ["Aligne la tête, le dos et les talons, puis tiens la position.", "30 à 60 secondes ; arrête dès que l'alignement se perd."],
-  "attention": ["Rentre légèrement le bassin et serre les fessiers : le bas du dos ne se creuse pas.", "Fesses ni trop hautes, ni trop basses.", "Pousse le sol avec les avant-bras : les omoplates ne s'affaissent pas.", "Regard vers le sol, nuque dans l'alignement."],
-  "respiration": "Respire calmement pendant toute la tenue."
+  "mouvement": [
+   "Aligne la tête, le dos et les talons, puis tiens la position.",
+   "30 à 60 secondes ; arrête dès que l'alignement se perd."
+  ],
+  "attention": [
+   "Rentre légèrement le bassin et serre les fessiers : le bas du dos ne se creuse pas.",
+   "Fesses ni trop hautes, ni trop basses.",
+   "Pousse le sol avec les avant-bras : les omoplates ne s'affaissent pas.",
+   "Regard vers le sol, nuque dans l'alignement."
+  ],
+  "respiration": "Respire calmement pendant toute la tenue.",
+  "apport": "C'est la base du gainage : apprendre à garder le tronc rigide. Il soutient tous les autres exercices (développé, split squat, RDL) en protégeant le bas du dos, et sert de travail de fond peu fatigant en fin de séance."
  },
  "poutre-repeaters": {
   "titre": "Suspensions à la poutre (repeaters)",
-  "principaux": ["Fléchisseurs des doigts (profond et superficiel)"],
-  "secondaires": ["Muscles de l'avant-bras", "Grand dorsal et épaules (maintien)"],
+  "principaux": [
+   "Fléchisseurs des doigts (profond et superficiel)"
+  ],
+  "secondaires": [
+   "Muscles de l'avant-bras",
+   "Grand dorsal et épaules (maintien)"
+  ],
   "depart": "Face à la poutre, mains sur la réglette de 20 mm en semi-arqué : doigts pliés à environ 90° à la deuxième phalange, pouce libre. Épaules engagées, bras presque tendus.",
-  "mouvement": ["Suspends-toi 7 secondes, pieds décollés.", "Pose les pieds 3 secondes, puis recommence : 6 suspensions font une série.", "3 minutes de repos entre les séries."],
-  "attention": ["Toujours après un échauffement complet des doigts.", "Jamais d'arqué complet (pouce sur l'index) : c'est la position la plus risquée pour les poulies des doigts.", "Épaules engagées, coudes très légèrement fléchis : pas de suspension passive.", "Arrête immédiatement à la moindre douleur dans un doigt.", "Règle le lest ou l'assistance pour finir chaque série avec un peu de marge, jamais à l'échec."],
-  "respiration": "Respire pendant la suspension, ne bloque pas."
+  "mouvement": [
+   "Suspends-toi 7 secondes, pieds décollés.",
+   "Pose les pieds 3 secondes, puis recommence : 6 suspensions font une série.",
+   "3 minutes de repos entre les séries."
+  ],
+  "attention": [
+   "Toujours après un échauffement complet des doigts.",
+   "Jamais d'arqué complet (pouce sur l'index) : c'est la position la plus risquée pour les poulies des doigts.",
+   "Épaules engagées, coudes très légèrement fléchis : pas de suspension passive.",
+   "Arrête immédiatement à la moindre douleur dans un doigt.",
+   "Règle le lest ou l'assistance pour finir chaque série avec un peu de marge, jamais à l'échec."
+  ],
+  "respiration": "Respire pendant la suspension, ne bloque pas.",
+  "apport": "C'est l'entraînement spécifique de la force des doigts, le facteur qui limite le plus souvent la progression en bloc et en voie. Les suspensions répétées (7 s / 3 s) développent force et endurance de force sur les réglettes. Elles se font en semi-arqué, sans jamais aller à l'échec, pour protéger les poulies des doigts."
  }
 }
