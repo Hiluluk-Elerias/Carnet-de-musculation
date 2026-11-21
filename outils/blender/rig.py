@@ -45,6 +45,40 @@ for sd, sg in (("l", 1), ("r", -1)):
         (f"pied.{sd}", f"cheville.{sd}", f"orteils.{sd}", f"jambe.{sd}", sg),
     ]
 
+DOIGTS = ["first", "second", "third", "fourth", "fifth"]
+def articulations_doigts():
+    """Ajoute à J et BONES les os des doigts, à partir des phalanges de l'atlas (pouce : métacarpien + 2 phalanges)."""
+    def verts(nom):
+        o = bpy.data.objects.get(nom)
+        if o is None: return None
+        n = len(o.data.vertices); co = np.empty(n * 3); o.data.vertices.foreach_get("co", co)
+        mw = np.array(o.matrix_world); co = co.reshape(-1, 3)
+        return co @ mw[:3, :3].T + mw[:3, 3]
+    for sd, sg in (("l", 1), ("r", -1)):
+        for k, f in enumerate(DOIGTS):
+            seq = ([f"First metacarpal bone.{sd}"] if k == 0 else [f"{['First','Second','Third','Fourth','Fifth'][k]} metacarpal bone.{sd}"])
+            seq += [f"Proximal phalanx of {f} finger of hand.{sd}"] + ([] if k == 0 else [f"Middle phalanx of {f} finger of hand.{sd}"])
+            seq += [f"Distal phalanx of {f} finger of hand.{sd}"]
+            V = [verts(n) for n in seq]
+            if any(v is None for v in V):
+                p("phalanges manquantes", f, sd); continue
+            C = [v.mean(axis=0) for v in V]
+            pts = []
+            for i in range(len(V) - 1):
+                a_ = V[i][np.argmin(np.linalg.norm(V[i] - C[i + 1], axis=1))]
+                b_ = V[i + 1][np.argmin(np.linalg.norm(V[i + 1] - C[i], axis=1))]
+                pts.append((a_ + b_) / 2)
+            pts.append(V[-1][np.argmax(np.linalg.norm(V[-1] - C[-2], axis=1))])
+            if k == 0:  # le pouce part de la base de son métacarpien
+                base = V[0][np.argmax(np.linalg.norm(V[0] - C[1], axis=1))]
+                pts = [base] + pts
+            noms = []
+            for i in range(len(pts) - 1):
+                J[f"d{k}_{i}.{sd}"] = tuple(pts[i]); J[f"d{k}_{i + 1}.{sd}"] = tuple(pts[i + 1])
+                nom = f"doigt{k}_{i}.{sd}"
+                BONES.append((nom, f"d{k}_{i}.{sd}", f"d{k}_{i + 1}.{sd}", noms[-1] if noms else f"main.{sd}", sg))
+                noms.append(nom)
+
 def collections_objets():
     def walk(col, acc):
         acc |= set(col.objects)
@@ -60,6 +94,8 @@ def collections_objets():
 
 def construire():
     t0 = time.time()
+    if not any(n.startswith("doigt") for n, *_ in BONES):
+        articulations_doigts()
     old = bpy.data.objects.get("Squelette")
     if old: bpy.data.objects.remove(old, do_unlink=True)
     arm_d = bpy.data.armatures.new("Squelette")
@@ -170,14 +206,42 @@ def poser(arm, angles):
         a = angles.get(nom, angles.get(nom.split(".")[0]))
         if a is None:
             continue
+        tw = 0
+        if isinstance(a, (tuple, list)):
+            a, tw = a
+            tw = tw * sg  # même sens anatomique des deux côtés
         bpy.context.view_layer.update()
         b = pb[nom]
         head = b.matrix.translation.copy()
         rest = arm.data.bones[nom].matrix_local.to_3x3()
-        b.matrix = Matrix.Translation(head) @ (Matrix.Rotation(math.radians(a), 3, 'X') @ rest).to_4x4()
+        b.matrix = Matrix.Translation(head) @ (Matrix.Rotation(math.radians(a), 3, 'X') @ rest @ Matrix.Rotation(math.radians(tw), 3, 'Y')).to_4x4()
     bpy.context.view_layer.update()
     # les pieds restent au sol : on recale la base pour ramener les chevilles à leur place
     ch = (pb["jambe.l"].tail + pb["jambe.r"].tail) / 2
     rest_ch = Vector(((J["cheville.l"][0] + J["cheville.r"][0]) / 2, J["cheville.l"][1], J["cheville.l"][2]))
     pb["base"].matrix = Matrix.Translation(rest_ch - ch) @ pb["base"].matrix
     bpy.context.view_layer.update()
+
+def fermer_mains(arm, flex=(55, 90, 60), pouce=(25, 35, 45), signe=1):
+    """Fléchit les doigts (angles en degrés par articulation, de la base vers le bout), autour de l'axe de flexion au repos."""
+    pb = arm.pose.bones
+    for b in pb:
+        if not b.name.startswith("doigt"): continue
+        k = int(b.name[5]); i = int(b.name.split("_")[1].split(".")[0]); sd = b.name[-1]
+        rest = arm.data.bones[b.name].matrix_local.to_3x3()
+        d = (rest @ Vector((0, 1, 0))).normalized()
+        if k == 0:
+            # le pouce se replie vers la paume, vers l'index
+            idx = Vector(J[f"d1_1.{sd}"]) - Vector(J[f"d0_1.{sd}"])
+            ax = d.cross(idx).normalized(); ang = pouce[min(i, 2)]
+        else:
+            ax = d.cross(Vector((0, -1, 0))).normalized(); ang = flex[min(i, 2)]  # la paume regarde vers l'avant au repos
+        ax_loc = rest.inverted() @ ax
+        b.matrix_basis = Matrix.Rotation(math.radians(ang * signe), 4, ax_loc)
+    bpy.context.view_layer.update()
+
+def centre_prise(arm, sd):
+    pb = arm.pose.bones
+    pts = [pb[f"doigt{k}_{i}.{sd}"].head for k in range(1, 5) for i in range(3) if f"doigt{k}_{i}.{sd}" in pb]
+    pts += [pb[f"doigt{k}_2.{sd}"].tail for k in range(1, 5) if f"doigt{k}_2.{sd}" in pb]
+    return sum(pts, Vector()) / len(pts)
