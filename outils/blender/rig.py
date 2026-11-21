@@ -108,6 +108,20 @@ def construire():
                 elig = [s for s in segs if s[0] in ("tete",)] if abs(cx) < 0.09 else elig
             else:
                 elig = [s for s in elig if s[3] != 0] or elig
+        if o in musc:
+            n_ = o.name.lower(); cz = w[:, 2].mean()
+            JAMBE = ("cuisse", "jambe", "pied")
+            HANCHE = ("glute", "psoas", "iliacus", "iliopsoas", "piriformis", "obturator", "gemellus", "quadratus femoris",
+                      "tensor fasciae", "sartorius", "rectus femoris", "gracilis", "adductor", "pectineus", "biceps femoris",
+                      "semitendinosus", "semimembranosus")
+            if cz > 0.92 and not any(k in n_ for k in HANCHE):
+                elig = [s for s in elig if s[0].split(".")[0] not in JAMBE]
+            if cz < 0.85 and abs(cx) < 0.2:
+                elig = [s for s in elig if s[0].split(".")[0] not in ("clavicule", "bras", "avant_bras", "main")]
+            if any(k in n_ for k in ("rectus abdominis", "oblique", "transversus abdominis", "pyramidalis", "quadratus lumborum",
+                                     "erector", "iliocostalis", "longissimus", "spinalis", "multifid", "rotatores", "interspinal",
+                                     "intertransvers", "serratus posterior", "intercostal", "subcostal", "diaphragm")):
+                elig = [s for s in elig if s[3] == 0]
         pts = w if o in musc else w.mean(axis=0, keepdims=True)
         D = []
         for nom, a, b, sg in elig:
