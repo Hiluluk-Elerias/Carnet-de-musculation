@@ -45,14 +45,14 @@ try:
         y0, y1, z0, z1 = cadre
         cam = sc.camera
         w, h = y1 - y0, z1 - z0
-        sc.render.resolution_x, sc.render.resolution_y = int(1000 * w / max(w, h)), int(1000 * h / max(w, h))
+        sc.render.resolution_x, sc.render.resolution_y = int(1500 * w / max(w, h)), int(1500 * h / max(w, h))
         cam.data.ortho_scale = max(w, h)
         cam.location = (2.0, (y0 + y1) / 2, (z0 + z1) / 2); cam.rotation_euler = (math.radians(90), 0, math.radians(90))
         sc.render.filepath = str(BASE / f"{nom}.png")
         t = time.time(); bpy.ops.render.render(write_still=True); p("rendu", nom, round(time.time() - t, 1), "s")
 
     cadre = (-0.75, 0.55, -0.03, 1.78)
-    R["poser"](arm, {"bras": 0, "avant_bras": 0, "main": 0}); bpy.context.view_layer.update()
+    R["poser"](arm, {"bras": -7, "avant_bras": -7, "main": -7}); bpy.context.view_layer.update()
     accessoires_barre(arm); rendu("rdl-0-debout", cadre)
     R["poser"](arm, {"bassin": 70, "cuisse": -40, "jambe": 3, "pied": 0, "bras": 13, "avant_bras": 13, "main": 13})
     bpy.context.view_layer.update()
