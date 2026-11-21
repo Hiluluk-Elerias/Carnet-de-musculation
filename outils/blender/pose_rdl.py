@@ -44,14 +44,17 @@ def materiaux_dessin():
         r = ramp.color_ramp; r.interpolation = 'CONSTANT'
         clair = tuple(min(1, c * 1.0) for c in col); moyen = tuple(c * 0.82 for c in col); ombre = tuple(c * 0.62 for c in col)
         r.elements[0].position = 0.0; r.elements[0].color = (*ombre, 1)
-        r.elements[1].position = 0.55; r.elements[1].color = (*clair, 1)
-        e = r.elements.new(0.22); e.color = (*moyen, 1)
+        r.elements[1].position = 0.62; r.elements[1].color = (*clair, 1)
+        e = r.elements.new(0.3); e.color = (*moyen, 1)
         nt.links.new(dif.outputs[0], s2r.inputs[0]); nt.links.new(s2r.outputs["Color"], ramp.inputs["Fac"])
         nt.links.new(ramp.outputs["Color"], em.inputs["Color"]); nt.links.new(em.outputs[0], out.inputs["Surface"])
         mats[cat] = m
     return mats
 
 try:
+    for o in bpy.data.objects:  # étiquettes et icônes de groupes de l'atlas : pas de l'anatomie
+        if o.type == 'MESH' and o.name.rsplit(".", 1)[-1] in ("g", "j", "t", "i", "s"):
+            o.hide_render = True
     arm = R["construire"]()
     sc = bpy.context.scene
     musc, os_l = R["collections_objets"]()
@@ -98,7 +101,8 @@ try:
                 o.data.materials.clear(); o.data.materials.append(m)
         if not bpy.data.objects.get("Soleil_dessin"):
             l = bpy.data.objects.new("Soleil_dessin", bpy.data.lights.new("Soleil_dessin", 'SUN'))
-            sc.collection.objects.link(l); l.rotation_euler = (math.radians(50), 0, math.radians(60)); l.data.energy = 3
+            sc.collection.objects.link(l)
+            l.rotation_euler = Vector((-0.55, 0.35, -0.75)).to_track_quat('-Z', 'Y').to_euler(); l.data.energy = 2.2
         w = sc.world; w.use_nodes = True
         bg = w.node_tree.nodes.get("Background")
         if bg: bg.inputs["Color"].default_value = (1, 1, 1, 1); bg.inputs["Strength"].default_value = 1
