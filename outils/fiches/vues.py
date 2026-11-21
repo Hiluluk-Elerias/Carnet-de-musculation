@@ -9,6 +9,13 @@ def mirror(pts):
 def mshape(fr, z, pts, role, side='near', sw=0.5, fibers=None):
     """Muscle dessiné à partir d'un contour (vue de face ou de dos)."""
     pal = PAL[side]
+    import moteur as _m
+    if _m.STYLE == 'plat':
+        if not role:
+            return
+        c = HL[side][role]
+        shape(fr, z, pts, c['fill'], c['line'], sw)
+        return
     if role:
         c = HL[side][role]
         fill, ln, fib = c['fill'], c['line'], c['fib']

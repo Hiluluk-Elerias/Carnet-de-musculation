@@ -9,7 +9,7 @@ Repère : x vers la droite (le personnage regarde vers la droite), y vers le hau
 Angles en degrés, mesurés depuis la verticale montante, dans le sens horaire :
 0 = vers le haut, 90 = vers l'avant, 180 = vers le bas, 270 = vers l'arrière.
 """
-import math
+import math, os
 
 # ------------------------------------------------------------------ géométrie
 def rad(a): return math.radians(a)
@@ -71,6 +71,16 @@ HL = {
     'near': {'p': dict(fill='#d7343c', line='#7a1219', fib='#a01d25'), 's': dict(fill='#f39375', line='#a84a2f', fib='#cf6a4a')},
     'far': {'p': dict(fill='#b8383e', line='#6e161b', fib='#8c2228'), 's': dict(fill='#d98b70', line='#93462f', fib='#b8603f')},
 }
+STYLE = os.environ.get('STYLE_FICHE', '')  # 'plat' : silhouette lisse, seuls les muscles travaillés sont dessinés
+if STYLE == 'plat':
+    PAL = {
+        'near': dict(skin='#e8ebef', skin_line='#4f5763', mus='#e8ebef', mus_line='#4f5763', fib='#e8ebef'),
+        'far': dict(skin='#cfd4db', skin_line='#6a727e', mus='#cfd4db', mus_line='#6a727e', fib='#cfd4db'),
+    }
+    HL = {
+        'near': {'p': dict(fill='#e23b41', line='#8e1c21', fib='#e23b41'), 's': dict(fill='#f6a27f', line='#b4593b', fib='#f6a27f')},
+        'far': {'p': dict(fill='#c2454a', line='#7c2024', fib='#c2454a'), 's': dict(fill='#dc9a7f', line='#9c573f', fib='#dc9a7f')},
+    }
 INK = '#2b2622'
 EQUIP = dict(fill='#d5d9df', line='#4b5360', dark='#5b6472', light='#eef0f3')
 
@@ -335,6 +345,19 @@ def draw_muscle(fr, S, side, m, z):
     B = seg_of(S, m['B'][0], side).pt(m['B'][1], m['B'][2])
     outline, mid, nrm = spindle(A, B, m['w'], m.get('peak', 0.5), m.get('bias', 0.0))
     role = fr.hl.get(m['id'])
+    if STYLE == 'plat':
+        if not role:
+            return
+        c = HL[side][role]
+        cid = getattr(fr, 'clip_' + side, None)
+        clip = f' clip-path="url(#{cid})"' if cid else ''
+        svg = f'<path d="{path_closed(outline)}" fill="{c["fill"]}" stroke="{c["line"]}" stroke-width="0.55" stroke-linejoin="round"{clip}/>'
+        if m.get('bands'):
+            for f in (0.32, 0.52, 0.72):
+                cc, wf = mid[round(f * (len(mid) - 1))]
+                svg += f'<path d="M{P(add(cc, mul(nrm, wf * 0.8)))} L{P(add(cc, mul(nrm, -wf * 0.8)))}" stroke="{c["line"]}" stroke-width="0.4"/>'
+        fr.add(z, svg, outline, tag='body_' + side)
+        return
     base = PAL[side]
     if role:
         c = HL[side][role]
@@ -370,6 +393,8 @@ def draw_head(fr, S):
     shape(fr, Z['head'], pts, PAL['near']['skin'], PAL['near']['skin_line'], 0.75, tag='head')
     ear = ellipse_pts(h.pt(9.4, -1.6), 3.0, 1.8, angle(h.d), 10)
     shape(fr, Z['head'] + 1, ear, PAL['near']['skin'], PAL['near']['skin_line'], 0.5)
+    if STYLE == 'plat':
+        return
     line(fr, Z['head'] + 1, [h.pt(12.0, 4.8), h.pt(12.4, 6.6), h.pt(11.9, 7.6)], PAL['near']['skin_line'], 0.5, smooth=True)
     line(fr, Z['head'] + 1, [h.pt(10.6, 5.6), h.pt(10.4, 6.9)], PAL['near']['skin_line'], 0.6)
     line(fr, Z['head'] + 1, [h.pt(4.5, 4.4), h.pt(2.2, 1.6), h.pt(1.0, -1.2)], PAL['near']['mus_line'], 0.45, smooth=True)
@@ -410,40 +435,61 @@ def draw_foot(fr, S, side, z):
     shape(fr, z, pts, PAL[side]['skin'], PAL[side]['skin_line'], 0.6, tag='foot_' + side)
 
 
+_CLIP_N = [0]
+def _silhouettes(fr, S):
+    """Style plat : les muscles colorés sont découpés à la silhouette du corps (rien ne dépasse)."""
+    t = S['torso']
+    tp = [t.pt(a, o) for a, o in TORSO_ANT] + [t.pt(a, o) for a, o in TORSO_POST]
+    for side in ('near', 'far'):
+        polys = [tp, limb_pts(S['neck'], PROF['neck'])] + [limb_pts(S[nm + '_' + side], PROF[nm]) for nm in ('ua', 'fa', 'th', 'sh')]
+        _CLIP_N[0] += 1
+        cid = f'silh{_CLIP_N[0]}'
+        d = " ".join(path_closed(q) for q in polys)
+        fr.add(0, f'<clipPath id="{cid}"><path d="{d}"/></clipPath>', [])
+        setattr(fr, 'clip_' + side, cid)
+
+def _groupe(fr, z, polys, fill, line_c, sw, tag):
+    """Style plat : plusieurs pièces dessinées comme une seule silhouette (pas de couture entre elles)."""
+    if STYLE != 'plat':
+        for q in polys:
+            shape(fr, z, q, fill, line_c, sw, tag=tag)
+        return
+    d = " ".join(path_closed(q) for q in polys)
+    pts = [p for q in polys for p in q]
+    fr.add(z, f'<path d="{d}" fill="{fill}" stroke="{line_c}" stroke-width="{sw * 2.2:.2f}" stroke-linejoin="round"/>', pts, tag=tag)
+    fr.add(z + 0.01, f'<path d="{d}" fill="{fill}" stroke="none"/>', [], tag=None)
+
 def draw_figure(fr, S, show_far_arm=True, show_far_leg=True):
     pal_n, pal_f = PAL['near'], PAL['far']
+    if STYLE == 'plat':
+        _silhouettes(fr, S)
     # côté éloigné
     if show_far_arm:
-        for nm in ('ua', 'fa'):
-            shape(fr, Z['far_arm'], limb_pts(S[nm + '_far'], PROF[nm]), pal_f['skin'], pal_f['skin_line'], 0.6, tag='body_far')
+        _groupe(fr, Z['far_arm'], [limb_pts(S[nm + '_far'], PROF[nm]) for nm in ('ua', 'fa')], pal_f['skin'], pal_f['skin_line'], 0.6, 'body_far')
         for m in MUSCLES['arm']:
             draw_muscle(fr, S, 'far', m, Z['far_arm'] + 1)
         draw_hand(fr, S, 'far', Z['far_hand'])
     if show_far_leg:
-        for nm in ('th', 'sh'):
-            shape(fr, Z['far_leg'], limb_pts(S[nm + '_far'], PROF[nm]), pal_f['skin'], pal_f['skin_line'], 0.6, tag='body_far')
+        _groupe(fr, Z['far_leg'], [limb_pts(S[nm + '_far'], PROF[nm]) for nm in ('th', 'sh')], pal_f['skin'], pal_f['skin_line'], 0.6, 'body_far')
         for m in MUSCLES['leg']:
             draw_muscle(fr, S, 'far', m, Z['far_leg'] + 1)
         draw_foot(fr, S, 'far', Z['far_foot'])
     # tronc
     t = S['torso']
     tp = [t.pt(a, o) for a, o in TORSO_ANT] + [t.pt(a, o) for a, o in TORSO_POST]
-    shape(fr, Z['torso'], tp, pal_n['skin'], pal_n['skin_line'], 0.8, tag='torso')
-    shape(fr, Z['torso'] + 1, limb_pts(S['neck'], PROF['neck']), pal_n['skin'], pal_n['skin_line'], 0.7, tag='torso')
+    _groupe(fr, Z['torso'], [tp, limb_pts(S['neck'], PROF['neck'])], pal_n['skin'], pal_n['skin_line'], 0.75, 'torso')
     for m in MUSCLES['torso']:
         draw_muscle(fr, S, 'near', m, Z['torso_m'])
     # jambe proche
-    for nm in ('th', 'sh'):
-        shape(fr, Z['near_leg'], limb_pts(S[nm + '_near'], PROF[nm]), pal_n['skin'], pal_n['skin_line'], 0.75, tag='body_near')
+    _groupe(fr, Z['near_leg'], [limb_pts(S[nm + '_near'], PROF[nm]) for nm in ('th', 'sh')], pal_n['skin'], pal_n['skin_line'], 0.75, 'body_near')
     for m in MUSCLES['leg']:
         draw_muscle(fr, S, 'near', m, Z['near_leg_m'])
-    knee = S['sh_near'].a
-    circle(fr, Z['near_leg_m'] + 1, S['sh_near'].pt(0.02, 4.4), 2.3, pal_n['mus'], pal_n['mus_line'], 0.45)
+    if STYLE != 'plat':
+        circle(fr, Z['near_leg_m'] + 1, S['sh_near'].pt(0.02, 4.4), 2.3, pal_n['mus'], pal_n['mus_line'], 0.45)
     draw_foot(fr, S, 'near', Z['near_foot'])
     draw_head(fr, S)
     # bras proche
-    for nm in ('ua', 'fa'):
-        shape(fr, Z['near_arm'], limb_pts(S[nm + '_near'], PROF[nm]), pal_n['skin'], pal_n['skin_line'], 0.75, tag='body_near')
+    _groupe(fr, Z['near_arm'], [limb_pts(S[nm + '_near'], PROF[nm]) for nm in ('ua', 'fa')], pal_n['skin'], pal_n['skin_line'], 0.75, 'body_near')
     for m in MUSCLES['arm']:
         draw_muscle(fr, S, 'near', m, Z['near_arm_m'])
     draw_hand(fr, S, 'near', Z['near_hand'])

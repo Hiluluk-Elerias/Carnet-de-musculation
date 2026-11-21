@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.8.0";
+const APP_VERSION = "1.9.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft", poids: "cm.poids" };
@@ -626,11 +626,10 @@ function ficheHtml(id) {
   if (!f) return "";
   const li = (a) => a.map((x) => `<li>${esc(x)}</li>`).join("");
   return `<div class="fiche">
-    ${f.rendu ? `<figure class="rendu"><img src="${esc(f.rendu)}" alt="Exécution et muscles sollicités : ${esc(f.principaux.join(", "))}" loading="lazy"><figcaption class="credit">Modèle anatomique : Z-Anatomy (CC BY-SA 4.0)</figcaption></figure>`
-      : `<figure class="planche"><img src="fiches/svg/${esc(id)}-planche.svg" alt="Muscles sollicités : ${esc(f.principaux.join(", "))}" loading="lazy"></figure>`}
+    <figure class="rendu"><img src="${esc(f.dessin || `fiches/svg/${id}-mouvement.svg`)}" alt="Exécution et muscles sollicités : ${esc(f.principaux.join(", "))}" loading="lazy"></figure>
     <p class="fiche-muscles"><span class="pastille p" aria-hidden="true"></span><b>Principaux :</b> ${esc(f.principaux.join(", "))}<br><span class="pastille s" aria-hidden="true"></span><b>Secondaires :</b> ${esc(f.secondaires.join(", "))}</p>
     ${f.apport ? `<h4>Intérêt pour tes objectifs</h4><p>${esc(f.apport)}</p>` : ""}
-${f.rendu ? "" : `<figure class="mouvement"><img src="fiches/svg/${esc(id)}-mouvement.svg" alt="Exécution : position de départ et d'arrivée" loading="lazy"></figure>`}
+
     <h4>Position de départ</h4><p>${esc(f.depart)}</p>
     <h4>Exécution</h4><ol>${li(f.mouvement)}</ol>
     <h4>Points d'attention</h4><ul class="attn">${li(f.attention)}</ul>

@@ -534,6 +534,23 @@ EXOS = {
 
 
 def generate(eid):
+    if os.environ.get('STYLE_FICHE') == 'plat':  # une seule image : les positions du mouvement, muscles colorés
+        spec = EXOS[eid]()
+        LEG = {"rdl": ["1 · Départ", "2 · Position basse"], "leg-curl-nordique": ["1 · Départ", "2 · Descente freinée"],
+               "y-sol": ["1 · Bras au sol", "2 · Bras décollés"], "split-squat": ["1 · Haut", "2 · Bas"],
+               "tractions": ["1 · Bras tendus", "2 · Menton haut"], "front-lever-groupe": ["1 · Suspension", "2 · Position groupée"],
+               "pompes-lestees": ["1 · Haut", "2 · Bas"], "dips": ["1 · Haut", "2 · Bas"], "releves-jambes": ["1 · Suspension", "2 · Jambes levées"],
+               "dev-militaire": ["1 · Haltères aux épaules", "2 · Bras tendus"], "curl-inverse": ["1 · Bras tendus", "2 · Barre aux épaules"],
+               "rowing-inverse": ["1 · Bras tendus", "2 · Poitrine à la barre"], "face-pull": ["1 · Bras tendus", "2 · Mains au visage"],
+               "pallof": ["1 · Poignée au sternum", "2 · Bras tendus"], "rotation-externe": ["1 · Départ", "2 · Rotation"]}
+        caps = spec.get('captions') or LEG.get(eid) or ['1 · Départ', '2 · Arrivée']
+        d = os.path.join(os.path.dirname(SORTIE), 'plat'); os.makedirs(d, exist_ok=True)
+        frames = list(spec['frames']); caps = list(caps[:len(frames)])
+        if spec.get('planche_frame') is not None and eid == 'rotation-externe':
+            frames.append(spec['planche_frame']); caps.append('Muscles (vue de dos)')
+        open(os.path.join(d, f'{eid}.svg'), 'w').write(render_svg(frames, captions=caps,
+             layout='col' if spec.get('wide') else 'row', align=spec.get('align', 'bottom')))
+        return
     spec = EXOS[eid]()
     frames = spec['frames']
     caps = spec.get('captions') or ['1 · Départ', '2 · Arrivée']
