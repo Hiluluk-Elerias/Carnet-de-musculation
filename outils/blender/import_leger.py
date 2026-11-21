@@ -43,10 +43,12 @@ try:
         meshes[c.name] = ms
         p(c.name, "meshes", len(ms), "autres", len(all_objs(c)) - len(ms))
     # on n'affiche que les maillages, pas les étiquettes ni les repères
-    keep = set(o for ms in meshes.values() for o in ms)
+    EXCL = ("fascia", "bursa", "sheath", "septum", "aponeuros", "retinacul", "ligament", "membrane", "capsule", "cartilag", "disc", "meniscus")
+    keep = set(o for ms in meshes.values() for o in ms
+               if not o.name.endswith(".j") and not any(k in o.name.lower() for k in EXCL))
     for o in bpy.data.objects:
         o.hide_render = o not in keep
-    musc = [o for n, ms in meshes.items() if "Muscular" in n for o in ms]
+    musc = [o for n, ms in meshes.items() if "Muscular" in n for o in ms if o in keep]
     p("échantillon muscles :", sorted(o.name for o in musc)[:200])
     ecrire()
 
@@ -62,11 +64,15 @@ try:
     sh.light = 'STUDIO'; sh.color_type = 'OBJECT'; sh.show_cavity = True
     sh.show_object_outline = True; sh.object_outline_color = (0.15, 0.1, 0.08); sh.show_shadows = False
     sc.render.resolution_x, sc.render.resolution_y, sc.render.resolution_percentage = 600, 960, 100
-    mins = Vector((1e9,) * 3); maxs = Vector((-1e9,) * 3)
-    for o in keep:
+    pts = []
+    for o in musc:
         for c in o.bound_box:
-            w = o.matrix_world @ Vector(c)
-            mins = Vector(map(min, mins, w)); maxs = Vector(map(max, maxs, w))
+            pts.append(o.matrix_world @ Vector(c))
+    def pct(i, q):
+        v = sorted(pt[i] for pt in pts); return v[int(q * (len(v) - 1))]
+    mins = Vector([pct(i, 0.005) for i in range(3)]); maxs = Vector([pct(i, 0.995) for i in range(3)])
+    if sc.world is None: sc.world = bpy.data.worlds.new("Fond")
+    sc.world.color = (1, 1, 1)
     p("bbox", tuple(round(x, 3) for x in mins), tuple(round(x, 3) for x in maxs))
     ctr = (mins + maxs) / 2; h = max(maxs - mins)
     cam_d = bpy.data.cameras.new("CamPlanche"); cam_d.type = 'ORTHO'; cam_d.ortho_scale = h * 1.08; cam_d.clip_end = h * 10
