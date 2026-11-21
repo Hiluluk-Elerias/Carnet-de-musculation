@@ -157,9 +157,13 @@ def construire():
             cen = w.mean(axis=0)
             def dseg(a, b):
                 ab = b - a; t = np.clip((cen - a) @ ab / max(ab @ ab, 1e-9), 0, 1); return np.linalg.norm(cen - (a + t * ab))
-            dbras = min([dseg(a, b) for nom, a, b, sg in elig if nom.split(".")[0] in BRAS] or [9])
-            if cz < 0.95 and dbras > 0.06:
-                elig = [s for s in elig if s[0].split(".")[0] not in BRAS]
+            est_bras = lambda nom: nom.split(".")[0] in BRAS or nom.startswith("doigt")
+            ARM_TRONC = ("latissimus", "pectoralis", "trapezius", "deltoid", "serratus anterior", "teres", "infraspinatus",
+                         "supraspinatus", "subscapularis", "rhomboid", "coracobrachialis", "biceps brachii", "triceps",
+                         "levator scapulae", "subclavius", "omohyoid")
+            dbras = min([dseg(a, b) for nom, a, b, sg in elig if est_bras(nom)] or [9])
+            if dbras > 0.06 and (cz < 1.1 or not any(k in n_ for k in ARM_TRONC)):
+                elig = [s for s in elig if not est_bras(s[0])]
             if any(k in n_ for k in ("rectus abdominis", "oblique", "transversus abdominis", "pyramidalis", "quadratus lumborum",
                                      "erector", "iliocostalis", "longissimus", "spinalis", "multifid", "rotatores", "interspinal",
                                      "intertransvers", "serratus posterior", "intercostal", "subcostal", "diaphragm")):
