@@ -93,12 +93,30 @@ def construire():
         w = co @ mw[:3, :3].T + mw[:3, 3]
         cx = w[:, 0].mean()
         elig = [s for s in segs if s[3] == 0 or (s[3] > 0 and cx > -0.02) or (s[3] < 0 and cx < 0.02)]
+        if o not in musc:
+            n_ = o.name.lower()
+            CENTRE = ("bassin", "lombaires", "dorsales", "thorax", "cou", "tete")
+            if any(k in n_ for k in ("sacrum", "coccyx", "hip bone", "pubic", "ilium", "ischium", "pelvi")):
+                elig = [s for s in segs if s[0] == "bassin"]
+            elif any(k in n_ for k in ("scapul", "clavic", "sternum", "rib", "costal", "manubri", "xiphoid")):
+                elig = [s for s in segs if s[0] in ("thorax", "dorsales")]
+            elif any(k in n_ for k in ("vertebra", "atlas", "axis", "intervertebral")):
+                elig = [s for s in segs if s[0] in CENTRE]
+            elif any(k in n_ for k in ("skull", "cranium", "mandible", "maxilla", "bone of", "tooth", "teeth", "hyoid", "nasal",
+                                        "frontal", "parietal", "occipital", "temporal", "sphenoid", "ethmoid", "zygomatic",
+                                        "vomer", "lacrimal", "palatine", "concha", "ossicle", "malleus", "incus", "stapes")):
+                elig = [s for s in segs if s[0] in ("tete",)] if abs(cx) < 0.09 else elig
+            else:
+                elig = [s for s in elig if s[3] != 0] or elig
         pts = w if o in musc else w.mean(axis=0, keepdims=True)
         D = []
         for nom, a, b, sg in elig:
             ab = b - a; L2 = max(ab @ ab, 1e-9)
-            t = np.clip(((pts - a) @ ab) / L2, 0, 1)
+            t_ = ((pts - a) @ ab) / L2
+            t = np.clip(t_, 0, 1)
             d = np.linalg.norm(pts - (a + t[:, None] * ab), axis=1)
+            # au-delà de la tête de l'os (côté parent), on laisse la place au parent
+            d = d + 2.5 * np.maximum(0, -t_) * math.sqrt(L2)
             if sg != 0:  # un membre ne capte pas les sommets de l'autre côté
                 d = np.where(pts[:, 0] * sg < -0.01, 9.0, d)
             D.append(d)

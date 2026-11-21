@@ -13,7 +13,7 @@ R = charger("rig.py")
 p, ecrire, BASE = R["p"], R["ecrire"], R["BASE"]
 try:
     arm = bpy.data.objects.get("Squelette")
-    if arm is None or not arm.get("poids_ok"):
+    if True:
         arm = R["construire"](); arm["poids_ok"] = 1
     ecrire()
     sc = bpy.context.scene
@@ -38,8 +38,7 @@ try:
     R["poser"](arm, {})
     rendu("rdl-0-debout")
     # position basse : buste penché, hanches en arrière, genoux légèrement fléchis, bras verticaux
-    R["poser"](arm, {"bassin": 62, "cuisse": -22, "jambe": 6, "pied": 0, "clavicule": 0, "bras": 4, "avant_bras": 4, "main": 4,
-                     "cou": 0, "tete": 0})
+    R["poser"](arm, {"bassin": 62, "cuisse": -22, "jambe": 6, "pied": 0, "bras": 4, "avant_bras": 4, "main": 4})
     rendu("rdl-1-bas")
     p("OK")
 except Exception:
