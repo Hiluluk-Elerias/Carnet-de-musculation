@@ -204,7 +204,7 @@ def cadrer(nom, vue, ech=None):
             for c in e.bound_box:
                 w = e.matrix_world @ Vector(c); us.append(w.dot(right)); zs.append(w.z)
     us.sort(); zs.sort()
-    u0, u1, z0, z1 = us[int(len(us) * 0.002)], us[int(len(us) * 0.998) - 1], zs[0], zs[-1]
+    u0, u1, z0, z1 = us[0], us[-1], zs[0], zs[-1]
     w, h = (u1 - u0) * 1.08 + 0.06, (z1 - z0) * 1.06 + 0.06
     return (u0, u1, z0, z1, w, h, fwd, right)
 
@@ -248,8 +248,8 @@ try:
         if o.type == 'MESH' and o.name.rsplit(".", 1)[-1] in ("g", "j", "t", "i", "s"):
             o.hide_render = True
     arm = bpy.data.objects.get("Squelette")
-    if arm is None or "v2" not in arm.keys():
-        arm = R["construire"](); arm["v2"] = 1
+    if arm is None or "v3" not in arm.keys():
+        arm = R["construire"](); arm["v3"] = 1
     else:
         R["articulations_doigts"]()  # recrée la liste des os des doigts dans ce module
     musc, os_ = R["collections_objets"]()
