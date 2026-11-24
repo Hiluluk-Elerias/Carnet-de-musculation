@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================ Constantes
-const APP_VERSION = "1.9.1";
+const APP_VERSION = "1.10.0";
 /** Vrai quand la page tourne dans l'appli Android (coque Capacitor). */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const LS_KEYS = { db: "cm.db", meta: "cm.meta", cfg: "cm.cfg", draft: "cm.draft", poids: "cm.poids" };
@@ -811,6 +811,38 @@ function viewHistorique() {
   return h + `</div>`;
 }
 
+/** Vue d'ensemble pour l'ordinateur : une ligne par exercice, une colonne par séance (meilleure série). */
+function viewTableau() {
+  header("Tableau du carnet", "vue d'ensemble pour l'ordinateur");
+  const progs = DB.programmes.filter((p) => DB.seances.some((s) => s.programme === p.id));
+  const filtre = UI.tabProg || "tous";
+  const seances = sortedSeances().filter((s) => filtre === "tous" || s.programme === filtre);
+  let h = `<div class="row wrap tab-filtres"><button type="button" class="mini${filtre === "tous" ? " on" : ""}" data-act="tab-prog" data-v="tous">Toutes les séances</button>${progs.map((p) => `<button type="button" class="mini${filtre === p.id ? " on" : ""}" data-act="tab-prog" data-v="${esc(p.id)}">${esc(p.nom)}</button>`).join("")}</div>`;
+  if (!seances.length) return h + `<p class="muted">Aucune séance enregistrée.</p>`;
+  // ordre des lignes : ordre des programmes, puis ordre d'apparition
+  const ordre = [];
+  const ajoute = (id) => { if (!ordre.includes(id)) ordre.push(id); };
+  (filtre === "tous" ? DB.programmes : DB.programmes.filter((p) => p.id === filtre)).forEach((p) => (p.items || []).forEach((it) => { if (seances.some((s) => s.exercices.some((x) => x.exo === it.exo))) ajoute(it.exo); }));
+  seances.slice().reverse().forEach((s) => s.exercices.forEach((x) => ajoute(x.exo)));
+  h += `<div class="tbl-wrap tableau"><table class="data grille"><thead><tr><th class="col-exo">Exercice</th>${seances.map((s) => `<th><a href="#historique/${esc(s.id)}">S${s.num}</a><span>${esc(new Date((s.date || todayISO()) + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" }))}</span></th>`).join("")}</tr></thead><tbody>`;
+  ordre.forEach((id) => {
+    const e = exo(id);
+    h += `<tr><th class="col-exo"><a href="#exercice/${esc(id)}">${esc(e.nom)}</a></th>`;
+    seances.forEach((s) => {
+      const x = s.exercices.find((y) => y.exo === id);
+      if (!x || !workSets(x).length) { h += `<td class="vide">·</td>`; return; }
+      const sets = workSets(x);
+      const best = sets.reduce((b, z) => (setScore(z, e, s.pc) > setScore(b, e, s.pc) ? z : b), sets[0]);
+      const d = DIFF.find((z) => z.v === diffOf(x));
+      const detail = sets.map((z) => `${kgLabel(z.kg, e)} × ${vLabel(vOf(z, e), e)}`).join(" | ");
+      h += `<td title="${esc(detail)}"><b>${esc(kgLabel(best.kg, e))}</b> × ${esc(vLabel(vOf(best, e), e))}<span class="muted"> · ${sets.length} sér.</span>${d ? `<i class="dot" style="background:${d.c}" title="Difficulté ${d.v}"></i>` : ""}</td>`;
+    });
+    h += `</tr>`;
+  });
+  h += `</tbody></table></div><p class="muted small">Chaque case montre la meilleure série de la séance ; survole-la pour voir toutes les séries. Clique sur une séance ou un exercice pour le détail.</p>`;
+  return h;
+}
+
 function viewSeanceDetail(id) {
   const s = DB.seances.find((x) => x.id === id);
   if (!s) { header("Séance introuvable"); return `<p>Cette séance n'existe plus. <a href="#historique">Retour à l'historique</a></p>`; }
@@ -1022,7 +1054,7 @@ function render() {
   if (UI.route !== "programme") UI.progEdit = null;
   const views = {
     accueil: viewAccueil, seance: viewSeance, apercu: () => viewApercu(UI.param), historique: () => (UI.param ? viewSeanceDetail(UI.param) : viewHistorique()),
-    exercices: viewExercices, exercice: () => viewExercice(UI.param), programme: () => viewProgramme(UI.param), outils: viewOutils, reglages: viewReglages
+    exercices: viewExercices, exercice: () => viewExercice(UI.param), programme: () => viewProgramme(UI.param), outils: viewOutils, reglages: viewReglages, tableau: viewTableau
   };
   const html = (views[UI.route] || viewAccueil)();
   $("#main").innerHTML = html;
@@ -1041,6 +1073,7 @@ document.addEventListener("click", async (ev) => {
     case "start": audioCtx(); return startSeance(b.dataset.id);
     case "start-dl": audioCtx(); return startSeance(b.dataset.id, true);
     case "ap-mode": UI.apercuDl = b.dataset.v === "1" ? b.dataset.id : null; return render();
+    case "tab-prog": UI.tabProg = b.dataset.v; return render();
     case "sem": UI.semaine = Math.min(0, (UI.semaine || 0) + num(b.dataset.v)); return render();
     case "poids-maj": POIDS.maj = 0; b.disabled = true; await fetchPoids(); toast(POIDS.err ? POIDS.err : `Poids mis à jour : ${fmt(poidsActuel(), 1)} kg`); return render();
     case "s-ok": {
